@@ -25,3 +25,10 @@ __pycache__/
 # demo virtualenv and generated demo artefacts
 .demoenv/
 src/sih_demo/output/
+
+# Isaac Sim generated world data and USD stages (rebuilt by run_isaac.sh)
+src/sih_isaac/generated/
+src/sih_isaac/usd/
+
+# package downloads
+*.deb

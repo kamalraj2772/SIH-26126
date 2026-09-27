@@ -1,0 +1,36 @@
+# robot_localization EKF -- sole owner of the odom->base_link TF edge.
+# Fuses wheel odometry (velocities only; skid-steer pose integration drifts,
+# that is the point) with IMU yaw rate and forward acceleration. No GNSS.
+ekf_filter_node:
+  ros__parameters:
+    use_sim_time: true
+    frequency: 30.0
+    two_d_mode: true
+    # Surveyed deployment pose: odom coincides with the map frame at t0, so
+    # slam_toolbox's map->odom starts near identity and only absorbs drift.
+    #                x      y      z    r    p    yaw     vx   vy   vz   vr   vp   vyaw  ax   ay   az
+    initial_state: [-62.0, 16.0,  0.0, 0.0, 0.0, 0.1396, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,  0.0, 0.0, 0.0]
+    publish_tf: true
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+
+    # Wheel odometry contributes FORWARD SPEED ONLY. Skid-steer wheel-diff yaw
+    # is unusable (scrub ratio varies with speed, load and slope); yaw rate
+    # comes solely from the IMU gyro below.
+    odom0: /odom_wheel
+    #             x     y     z     r     p     yaw   vx    vy    vz    vr    vp    vyaw  ax    ay    az
+    odom0_config: [false,false,false,false,false,false,true, true, false,false,false,false,false,false,false]
+    odom0_differential: false
+    odom0_queue_size: 10
+
+    # Absolute yaw comes from the IMU's orientation output -- on the real
+    # platform this is the magnetometer/AHRS heading (GPS-free); in sim it is
+    # exact. Without an absolute heading reference, integrated-gyro dead
+    # reckoning drifted ~13 deg over 45 m and missions failed.
+    imu0: /imu/data
+    imu0_config:  [false,false,false,false,false,true, false,false,false,false,false,true, true, false,false]
+    imu0_differential: false
+    imu0_remove_gravitational_acceleration: true
+    imu0_queue_size: 10

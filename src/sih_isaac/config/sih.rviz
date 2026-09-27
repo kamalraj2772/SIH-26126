@@ -1,0 +1,124 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    Tree Height: 500
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Fixed Frame: map
+    Frame Rate: 20
+    Background Color: 35; 38; 43
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 10
+      Plane Cell Count: 16
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Names: false
+      Marker Scale: 3
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Description Topic:
+        Value: /robot_description
+        Durability Policy: Transient Local
+    - Class: rviz_default_plugins/Map
+      Name: PriorMap (GeoTIFF slope)
+      Enabled: true
+      Topic:
+        Value: /prior_map
+        Durability Policy: Transient Local
+      Color Scheme: map
+    - Class: rviz_default_plugins/Map
+      Name: SLAM map (slam_toolbox)
+      Enabled: true
+      Topic:
+        Value: /map
+        Durability Policy: Transient Local
+      Color Scheme: map
+      Alpha: 0.5
+    - Class: rviz_default_plugins/Map
+      Name: GlobalCostmap
+      Enabled: true
+      Topic:
+        Value: /global_costmap/costmap
+        Durability Policy: Transient Local
+      Color Scheme: costmap
+      Alpha: 0.35
+    - Class: rviz_default_plugins/Map
+      Name: LocalCostmap
+      Enabled: true
+      Topic:
+        Value: /local_costmap/costmap
+        Durability Policy: Transient Local
+      Color Scheme: costmap
+      Alpha: 0.6
+    - Class: rviz_default_plugins/Path
+      Name: GlobalPlan (Smac A*)
+      Enabled: true
+      Topic:
+        Value: /plan
+      Line Style: Billboards
+      Line Width: 0.12
+      Color: 32; 159; 223
+    - Class: rviz_default_plugins/Path
+      Name: LocalPlan (MPPI)
+      Enabled: true
+      Topic:
+        Value: /local_plan
+      Line Style: Billboards
+      Line Width: 0.08
+      Color: 245; 121; 0
+    - Class: rviz_default_plugins/MarkerArray
+      Name: MPPI candidate trajectories
+      Enabled: true
+      Topic:
+        Value: /trajectories
+    - Class: rviz_default_plugins/LaserScan
+      Name: LaserScan
+      Enabled: true
+      Topic:
+        Value: /scan
+      Size (m): 0.06
+      Color Transformer: FlatColor
+      Color: 239; 41; 41
+    - Class: rviz_default_plugins/Odometry
+      Name: EKF odom
+      Enabled: true
+      Topic:
+        Value: /odometry/filtered
+      Keep: 200
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.3
+        Head Length: 0.15
+    - Class: rviz_default_plugins/Image
+      Name: Camera
+      Enabled: true
+      Topic:
+        Value: /camera/image
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/SetInitialPose
+    - Class: rviz_default_plugins/SetGoal
+      Topic:
+        Value: /goal_pose
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: Current View
+      Distance: 90
+      Pitch: 1.05
+      Yaw: 4.7
+      Focal Point:
+        X: 0
+        Y: 10
+        Z: 0
+Window Geometry:
+  Height: 1000
+  Width: 1600
