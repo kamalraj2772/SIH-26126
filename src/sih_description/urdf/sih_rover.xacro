@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<robot name="sih_rover" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Camera stream size/rate. Defaults are the specified ZED-class config.
+       Exposed as args because ROS-side delivery of 1280x720 RGB+depth+cloud
+       exceeds what the gz-transport/DDS path sustains at 30 Hz on this
+       machine (measured in Phase 1), so the resolution is the first knob. -->
+  <xacro:arg name="camera_width" default="1280"/>
+  <xacro:arg name="camera_height" default="720"/>
+  <xacro:arg name="camera_fps" default="30"/>
+
+  <!-- ============================================================
+       SIH26126 skid-steer UGV
+       - wheelbase 0.80 m, track 0.70 m, wheel radius 0.15 m
+       - mass 60 kg, max speed 1.5 m/s
+       - single xacro source: feeds robot_state_publisher AND the
+         Gazebo Harmonic spawn (gz sim converts URDF->SDF, carrying
+         <gazebo> plugin/sensor blocks through unchanged)
+       ============================================================ -->
+
+  <xacro:property name="wheelbase" value="0.80"/>
+  <xacro:property name="track" value="0.70"/>
+  <xacro:property name="wheel_radius" value="0.15"/>
+  <xacro:property name="wheel_width" value="0.08"/>
+  <xacro:property name="chassis_len" value="0.70"/>
+  <xacro:property name="chassis_wid" value="0.50"/>
+  <xacro:property name="chassis_hgt" value="0.25"/>
+  <xacro:property name="chassis_z" value="${wheel_radius + chassis_hgt/2.0 - 0.02}"/>
+  <xacro:property name="mass" value="60.0"/>
+  <!-- effective ground-contact friction: skid-steer, rubber-on-terrain.
+       Kept low enough that the ~35 deg mound is genuinely un-climbable
+       (mu < tan(35 deg) = 0.700) while the ~12 deg ridge (tan=0.213) is
+       trivial. Verified empirically in the Phase 1 teleop test, not just
+       assumed. -->
+  <xacro:property name="wheel_mu" value="0.55"/>
+
+  <material name="chassis_grey">
+    <color rgba="0.25 0.25 0.28 1.0"/>
+  </material>
+  <material name="wheel_black">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+  <material name="sensor_orange">
+    <color rgba="0.9 0.45 0.05 1.0"/>
+  </material>
+
+  <!-- ================= base_link / chassis ================= -->
+  <link name="base_link">
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+        ixx="${(mass/12.0)*(chassis_wid*chassis_wid + chassis_hgt*chassis_hgt)}" ixy="0" ixz="0"
+        iyy="${(mass/12.0)*(chassis_len*chassis_len + chassis_hgt*chassis_hgt)}" iyz="0"
+        izz="${(mass/12.0)*(chassis_len*chassis_len + chassis_wid*chassis_wid)}"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_len} ${chassis_wid} ${chassis_hgt}"/>
+      </geometry>
+      <material name="chassis_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_len} ${chassis_wid} ${chassis_hgt}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ================= wheels ================= -->
+  <xacro:macro name="wheel" params="prefix x_off y_off">
+    <link name="wheel_${prefix}_link">
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia
+          ixx="${(3.0/12.0)*(3*wheel_radius*wheel_radius + wheel_width*wheel_width)}" ixy="0" ixz="0"
+          iyy="${(3.0/12.0)*(3*wheel_radius*wheel_radius + wheel_width*wheel_width)}" iyz="0"
+          izz="${0.5*3.0*wheel_radius*wheel_radius}"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="1.5707963267948966 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="wheel_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="1.5707963267948966 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="wheel_${prefix}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="wheel_${prefix}_link"/>
+      <origin xyz="${x_off} ${y_off} ${-(chassis_z - wheel_radius)}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <gazebo reference="wheel_${prefix}_link">
+      <mu1>${wheel_mu}</mu1>
+      <mu2>${wheel_mu}</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:wheel prefix="fl" x_off="${wheelbase/2.0}"  y_off="${track/2.0}"/>
+  <xacro:wheel prefix="fr" x_off="${wheelbase/2.0}"  y_off="${-track/2.0}"/>
+  <xacro:wheel prefix="rl" x_off="${-wheelbase/2.0}" y_off="${track/2.0}"/>
+  <xacro:wheel prefix="rr" x_off="${-wheelbase/2.0}" y_off="${-track/2.0}"/>
+
+  <!-- ================= IMU ================= -->
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 ${chassis_hgt/2.0 - 0.02}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ================= camera: body-frame mount + REP-103 optical frame =================
+       camera_link follows the body convention (x fwd, y left, z up), matching where the
+       sensor is physically mounted. camera_optical_frame is a separate child link related
+       by a static joint so RTAB-Map (which needs REP-103: z fwd, x right, y down) gets a
+       correctly rotated frame_id, verified by inspecting the published image topic's
+       frame_id at runtime rather than assuming this transform is right. -->
+  <link name="camera_link">
+    <inertial>
+      <mass value="0.15"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.03 0.09 0.025"/>
+      </geometry>
+      <material name="sensor_orange"/>
+    </visual>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="${chassis_len/2.0 + 0.02} 0 ${chassis_hgt/2.0}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="camera_optical_frame">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="1e-9" ixy="0" ixz="0" iyy="1e-9" iyz="0" izz="1e-9"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <!-- body (x fwd,y left,z up) -> optical (z fwd,x right,y down) -->
+    <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+  </joint>
+
+  <!-- ================= ground-truth-only sibling link =================
+       base_link_gt is a massless link welded to base_link purely so
+       PosePublisher can report an evaluation-only ground truth pose.
+       It must never be read by any node in the navigation stack. -->
+  <link name="base_link_gt">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="1e-9" ixy="0" ixz="0" iyy="1e-9" iyz="0" izz="1e-9"/>
+    </inertial>
+  </link>
+  <joint name="base_link_gt_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_link_gt"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:include filename="$(find sih_description)/urdf/sih_rover.gazebo.xacro"/>
+
+</robot>

@@ -1,0 +1,82 @@
+# ros_gz_bridge config for the SIH26126 Phase 1 world.
+#
+# Every gz_topic_name/gz_type_name pair here was copied from a running
+# simulation via `gz topic -l` and `gz topic -i -t <topic>` -- not guessed
+# from the SDF (see Rule: mismatched names are the most common way this
+# stack silently does nothing).
+#
+# /tf_gt carries Gazebo's own scoped entity names (e.g. "sih_rover",
+# "sih_rover::base_link_gt"), not "map"/"base_link_gt". It is evaluation-only,
+# deliberately kept out of the live /tf tree, and must never be subscribed to
+# by any node in the navigation stack.
+#
+# frame_id: by default ros_gz_bridge sets header.frame_id to gz's
+# own scoped entity path (e.g. "sih_rover/camera_optical_frame/rgbd_camera"),
+# which does not match any frame robot_state_publisher actually publishes.
+# Verified empirically (rule 2) and fixed by overriding to the real TF frame
+# name here, per topic.
+
+- ros_topic_name: "clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/camera/image"
+  gz_topic_name: "/camera/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+  frame_id: "camera_optical_frame"
+
+- ros_topic_name: "/camera/depth_image"
+  gz_topic_name: "/camera/depth_image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+  frame_id: "camera_optical_frame"
+
+# NOTE the frame here is camera_link, not camera_optical_frame: gz-sim
+# publishes the RGBD point cloud in the body convention (x forward, y left,
+# z up), unlike the image/camera_info which use the optical convention.
+# Verified by inspecting the actual point data: its x field spans the same
+# 0.67-20 m range as the depth image, and ground points sit at z = -0.38 m,
+# exactly camera_link's height above the terrain.
+- ros_topic_name: "/camera/points"
+  gz_topic_name: "/camera/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+  frame_id: "camera_link"
+
+- ros_topic_name: "/camera/camera_info"
+  gz_topic_name: "/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+  frame_id: "camera_optical_frame"
+
+- ros_topic_name: "/imu/data"
+  gz_topic_name: "/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+  frame_id: "imu_link"
+
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/joint_states"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/cmd_vel"
+  gz_topic_name: "/model/sih_rover/cmd_vel"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+
+- ros_topic_name: "/tf_gt"
+  gz_topic_name: "/pose_gt"
+  ros_type_name: "tf2_msgs/msg/TFMessage"
+  gz_type_name: "gz.msgs.Pose_V"
+  direction: GZ_TO_ROS

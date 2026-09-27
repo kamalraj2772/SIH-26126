@@ -1,0 +1,27 @@
+# colcon workspace artifacts
+build/
+install/
+log/
+
+# generated simulation assets (reproducible from seed via sih_sim scripts)
+src/sih_sim/worlds/generated/
+src/sih_sim/heightmaps/generated/
+
+# perception model weights and datasets (Phase 3)
+src/sih_perception/models/
+src/sih_perception/dataset/
+*.pt
+*.engine
+*.onnx
+
+# python
+__pycache__/
+*.pyc
+
+# editors
+.vscode/
+*.swp
+
+# demo virtualenv and generated demo artefacts
+.demoenv/
+src/sih_demo/output/

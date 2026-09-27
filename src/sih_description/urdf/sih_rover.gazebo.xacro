@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ============================================================
+       Gazebo Harmonic (gz-sim 8) systems and sensors.
+       Passed through unchanged by sdformat's URDF->SDF conversion
+       when gz sim spawns this same xacro-generated URDF.
+
+       TF ownership honoured here (see project frame table):
+         - DiffDrive: cmd_vel -> wheel joints only. Its own odom/tf
+           gz-transport topics are redirected to *_gz_debug names and
+           are never bridged into ROS: the EKF (Phase 2) is the sole
+           owner of odom -> base_link.
+         - JointStatePublisher: publishes joint_states only, no TF.
+         - PosePublisher: ground-truth only, on a dedicated topic
+           bridged to /tf_gt (never /tf): evaluation-only, never
+           read by the navigation stack.
+       ============================================================ -->
+
+  <!-- Without this, sdformat's URDF->SDF converter lumps every fixed-joint
+       child link into base_link by default (confirmed empirically: gz sdf -p
+       on this file previously showed camera_link, camera_optical_frame,
+       imu_link and base_link_gt all disappearing into a single merged
+       base_link, which broke the sensor frame_id, see Rule 2). Each of
+       these links must survive as its own SDF link so sensor/pose frame_id
+       strings resolve to a frame that actually exists in robot_state_publisher's
+       /tf tree. -->
+  <gazebo reference="camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="camera_optical_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="imu_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="base_link_gt_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>wheel_fl_joint</left_joint>
+      <left_joint>wheel_rl_joint</left_joint>
+      <right_joint>wheel_fr_joint</right_joint>
+      <right_joint>wheel_rr_joint</right_joint>
+      <wheel_separation>${track}</wheel_separation>
+      <wheel_radius>${wheel_radius}</wheel_radius>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <min_linear_acceleration>-1.0</min_linear_acceleration>
+      <max_angular_acceleration>2.0</max_angular_acceleration>
+      <min_angular_acceleration>-2.0</min_angular_acceleration>
+      <max_linear_velocity>1.5</max_linear_velocity>
+      <min_linear_velocity>-1.5</min_linear_velocity>
+      <max_angular_velocity>1.5</max_angular_velocity>
+      <min_angular_velocity>-1.5</min_angular_velocity>
+      <!-- debug-only gz-transport outputs; deliberately not bridged to ROS -->
+      <odom_topic>diff_drive/odom_gz_debug</odom_topic>
+      <tf_topic>diff_drive/tf_gz_debug</tf_topic>
+    </plugin>
+
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+      <update_rate>50</update_rate>
+    </plugin>
+
+    <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+      <publish_link_pose>true</publish_link_pose>
+      <publish_model_pose>false</publish_model_pose>
+      <publish_collision_pose>false</publish_collision_pose>
+      <publish_visual_pose>false</publish_visual_pose>
+      <publish_sensor_pose>false</publish_sensor_pose>
+      <publish_nested_model_pose>false</publish_nested_model_pose>
+      <use_pose_vector_msg>true</use_pose_vector_msg>
+      <static_publisher>false</static_publisher>
+      <update_frequency>30</update_frequency>
+      <topic>pose_gt</topic>
+    </plugin>
+  </gazebo>
+
+  <!-- ================= IMU: 200 Hz, realistic MEMS noise =================
+       Values approximate a low-cost consumer MEMS IMU (e.g. ICM-20649 class):
+       gyro noise density, accel noise density, and slow bias random walk. -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>1</always_on>
+      <update_rate>200</update_rate>
+      <topic>imu/data</topic>
+      <imu>
+        <angular_velocity>
+          <x><noise type="gaussian">
+            <mean>0.0</mean><stddev>0.0018</stddev>
+            <bias_mean>0.0005</bias_mean><bias_stddev>0.0003</bias_stddev>
+            <dynamic_bias_stddev>0.0000075</dynamic_bias_stddev>
+            <dynamic_bias_correlation_time>500</dynamic_bias_correlation_time>
+          </noise></x>
+          <y><noise type="gaussian">
+            <mean>0.0</mean><stddev>0.0018</stddev>
+            <bias_mean>-0.0004</bias_mean><bias_stddev>0.0003</bias_stddev>
+            <dynamic_bias_stddev>0.0000075</dynamic_bias_stddev>
+            <dynamic_bias_correlation_time>500</dynamic_bias_correlation_time>
+          </noise></y>
+          <z><noise type="gaussian">
+            <mean>0.0</mean><stddev>0.0018</stddev>
+            <bias_mean>0.0002</bias_mean><bias_stddev>0.0003</bias_stddev>
+            <dynamic_bias_stddev>0.0000075</dynamic_bias_stddev>
+            <dynamic_bias_correlation_time>500</dynamic_bias_correlation_time>
+          </noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian">
+            <mean>0.0</mean><stddev>0.017</stddev>
+            <bias_mean>0.02</bias_mean><bias_stddev>0.01</bias_stddev>
+            <dynamic_bias_stddev>0.0003</dynamic_bias_stddev>
+            <dynamic_bias_correlation_time>500</dynamic_bias_correlation_time>
+          </noise></x>
+          <y><noise type="gaussian">
+            <mean>0.0</mean><stddev>0.017</stddev>
+            <bias_mean>-0.015</bias_mean><bias_stddev>0.01</bias_stddev>
+            <dynamic_bias_stddev>0.0003</dynamic_bias_stddev>
+            <dynamic_bias_correlation_time>500</dynamic_bias_correlation_time>
+          </noise></y>
+          <z><noise type="gaussian">
+            <mean>0.0</mean><stddev>0.017</stddev>
+            <bias_mean>0.01</bias_mean><bias_stddev>0.01</bias_stddev>
+            <dynamic_bias_stddev>0.0003</dynamic_bias_stddev>
+            <dynamic_bias_correlation_time>500</dynamic_bias_correlation_time>
+          </noise></z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+  <!-- ================= RGB-D camera =================
+       ZED-class: on-device depth, 1280x720, 90 deg HFOV, 30 Hz.
+
+       Mounted on camera_link, NOT camera_optical_frame: a Gazebo camera
+       sensor renders along its own frame's +x axis, whereas a REP-103
+       optical frame has +z forward. Mounting on the optical frame made the
+       camera physically look 90 deg to the right (verified: it rendered its
+       own wheel). camera_link uses the body convention (+x forward), which
+       is what Gazebo wants. The REP-103 frame_id that RTAB-Map needs is
+       applied at the bridge (config/bridge.yaml frame_id override) and
+       published as a real TF frame by robot_state_publisher. -->
+  <gazebo reference="camera_link">
+    <sensor name="rgbd_camera" type="rgbd_camera">
+      <always_on>1</always_on>
+      <update_rate>$(arg camera_fps)</update_rate>
+      <visualize>false</visualize>
+      <topic>camera</topic>
+      <camera>
+        <horizontal_fov>1.5707963267948966</horizontal_fov>
+        <image>
+          <width>$(arg camera_width)</width>
+          <height>$(arg camera_height)</height>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>50.0</far>
+        </clip>
+        <depth_camera>
+          <clip>
+            <near>0.1</near>
+            <far>20.0</far>
+          </clip>
+        </depth_camera>
+      </camera>
+    </sensor>
+  </gazebo>
+
+</robot>
