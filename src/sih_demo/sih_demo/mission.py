@@ -37,6 +37,9 @@ SAFETY_MARGIN_M = 0.20      # required clearance beyond the footprint
 MAX_TRAVERSABLE_SLOPE_DEG = 15.0
 
 CONTROL_HZ = 20.0
+# Dashboard frames are composed every Nth control step and played back at
+# CONTROL_HZ, so the video runs at Nx real time. The header states the factor.
+VIDEO_SPEEDUP = 2
 SIM_DT = 0.004              # MuJoCo integrator step
 MAX_MISSION_S = 300.0
 

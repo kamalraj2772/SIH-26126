@@ -127,6 +127,15 @@ def card(lines, seconds, fps, title=None):
             cv2.circle(c, (122, y - 6), 3, BLUE, -1, cv2.LINE_AA)
             cv2.putText(c, text, (142, y), FS, 0.62, TXT, 1, cv2.LINE_AA)
             y += 36
+        elif kind == "k":
+            # "LABEL|first line|second line" -- aligned two-column row.
+            parts = text.split("|")
+            cv2.putText(c, parts[0], (142, y), F, 0.60, ACCENT, 1, cv2.LINE_AA)
+            for j, body in enumerate(parts[1:]):
+                cv2.putText(c, body, (330, y + j * 30), FS,
+                            0.58 if j == 0 else 0.54,
+                            TXT if j == 0 else DIM, 1, cv2.LINE_AA)
+            y += 30 * len(parts[1:]) + 14
         elif kind == "d":
             cv2.putText(c, text, (142, y), FS, 0.58, DIM, 1, cv2.LINE_AA)
             y += 32

@@ -53,9 +53,10 @@ def R_z(a):
 
 # ---------------------------------------------------------------- the run
 class Demo:
-    def __init__(self, seed: int, duration: float, fast: bool):
+    def __init__(self, seed: int, duration: float, fast: bool, speed: int = 1):
         self.seed = seed
         self.duration = duration
+        self.speed = speed
         self.fast = fast
         OUT.mkdir(parents=True, exist_ok=True)
         self.log: list[dict] = []
@@ -251,33 +252,27 @@ class Demo:
 
         fps = int(mission.CONTROL_HZ)
         for f in hud.card([
-            ("Problem", "h"),
             ("Drive a skid-steer UGV to a surveyed UTM goal across unstructured "
-             "outdoor terrain", "b"),
-            ("with no GNSS available at any stage of the mission.", "d"),
-            ("What you are about to watch", "h"),
-            ("1.  UTM  -  the operator's goal is an EPSG:32644 easting/northing; "
-             "pyproj converts it", "b"),
-            ("into the local ENU map frame against a surveyed site datum. "
-             "No receiver is read.", "d"),
-            ("2.  GeoTIFF  -  a prior UTM-georeferenced DEM is written, read back "
-             "off disk, and", "b"),
-            ("A* plans a terrain-aware route over its slope map.", "d"),
-            ("3.  VSLAM  -  ORB features on the ZED 2i left image, back-projected "
-             "with stereo", "b"),
-            ("depth, tracked keyframe-to-frame by PnP-RANSAC. This is the only "
-             "source of pose.", "d"),
-            ("4.  Avoidance  -  ZED depth builds a local costmap; DWA rejects every "
-             "trajectory", "b"),
-            ("that violates the safety envelope, and drives the wheels.", "d"),
-            ("The guarantee", "h"),
-            ("The obstacles in the corridor are absent from the prior GeoTIFF. "
-             "They exist only in", "b"),
-            ("the depth stream. Ground truth is recorded to score the run and is "
-             "never fed back.", "d"),
-        ], 9.0, fps, title="SIH26126   GPS-DENIED UGV NAVIGATION"):
+             "terrain, with no GNSS at any stage.", "b"),
+            ("", "s"),
+            ("UTM|operator's goal is an EPSG:32644 easting / northing; pyproj "
+             "converts it into the|local map frame against a surveyed site datum. "
+             "No receiver is ever read.", "k"),
+            ("GeoTIFF|a prior UTM-georeferenced DEM is written, then read back "
+             "off disk;|A* plans a terrain-aware route over its slope map.", "k"),
+            ("VSLAM|RTAB-Map class stereo SLAM -- ORB features on the ZED 2i left "
+             "image,|back-projected with depth, tracked by PnP-RANSAC. "
+             "The only source of pose.", "k"),
+            ("Avoidance|ZED depth builds a local costmap; DWA rejects every "
+             "trajectory that|violates the safety envelope, and drives the wheels.", "k"),
+            ("", "s"),
+            ("The corridor obstacles are absent from the prior GeoTIFF - they "
+             "exist only in the depth stream.", "b"),
+            ("Ground truth is recorded to score the run and is never fed back.", "d"),
+        ], 6.5, fps, title="SIH26126   GPS-DENIED UGV NAVIGATION"):
             writer.append_data(f)
 
+        speed = max(1, int(self.speed))
         dt_ctrl = 1.0 / mission.CONTROL_HZ
         n_sub = max(1, int(round(dt_ctrl / mission.SIM_DT)))
         gt_track, est_track = [], []
@@ -396,17 +391,19 @@ class Demo:
             if dist_goal < mission.GOAL_TOLERANCE_M:
                 reached = True
 
-            frame = self.compose(rgb, depth, rep, dinfo, gt_track, est_track,
-                                 carrot, dict(err=err, travelled=travelled,
-                                              dist_goal=true_goal_dist,
-                                              min_clear=min_true_clear,
-                                              collisions=total_collisions,
-                                              v=v, w=w, tc=tc, reached=reached))
-            writer.append_data(frame)
+            if k % speed == 0 or reached:
+                frame = self.compose(rgb, depth, rep, dinfo, gt_track, est_track,
+                                     carrot, dict(err=err, travelled=travelled,
+                                                  dist_goal=true_goal_dist,
+                                                  min_clear=min_true_clear,
+                                                  collisions=total_collisions,
+                                                  v=v, w=w, tc=tc, reached=reached))
+                writer.append_data(frame)
+                if reached:
+                    for _ in range(int(mission.CONTROL_HZ * 1.5)):
+                        writer.append_data(frame)
 
             if reached:
-                for _ in range(int(mission.CONTROL_HZ * 2.5)):
-                    writer.append_data(frame)
                 break
 
             for _ in range(n_sub):
@@ -433,7 +430,7 @@ class Demo:
              f"   EPSG:32644 (UTM 44N)", "b"),
             (f"UTM <-> map round trip   {self.summary['utm_roundtrip_error_mm']:.3f} mm", "b"),
             (f"prior DEM             {self.prior.describe()}", "b"),
-            ("Visual SLAM  (ZED 2i, no GNSS, no wheel odometry)", "h"),
+            ("Visual SLAM  -  RTAB-Map class stereo front-end on the ZED 2i", "h"),
             (f"path travelled        {self.summary['path_travelled_m']:.1f} m"
              f"   over {self.summary['mission_time_s']:.0f} s", "b"),
             (f"final drift vs truth  {v['final_drift_m']:.2f} m  "
@@ -455,7 +452,7 @@ class Demo:
              f"   final error {self.summary['final_position_error_m']:.2f} m", "g"),
             ("", "s"),
             (f"RESULT: {ok}", "h"),
-        ], 10.0, fps, title="MISSION RESULT"):
+        ], 7.5, fps, title="MISSION RESULT"):
             writer.append_data(f)
         writer.close()
         return res
@@ -467,8 +464,8 @@ class Demo:
         e_utm = geo.map_to_utm(*est_track[-1])
 
         hud.header(c, "SIH26126  |  GPS-DENIED UGV NAVIGATION  |  ZED 2i VSLAM + DWA",
-                   f"MuJoCo 3.x  physics {self.d.time:6.1f} s   "
-                   f"seed {self.seed}   EPSG:32644",
+                   f"MuJoCo 3.x   physics {self.d.time:6.1f} s   "
+                   f"{int(self.speed)}x real time   seed {self.seed}   EPSG:32644",
                    "NO GNSS IN THE CONTROL PATH")
 
         # --- main chase view ---
@@ -484,9 +481,10 @@ class Demo:
 
         # --- ZED RGB with ORB overlay ---
         box = hud.panel(c, hud.R_RGB,
-                        f"ZED 2i  LEFT  {mission.ZED_WIDTH_FULL}x{mission.ZED_HEIGHT_FULL} HD720",
-                        f"HFOV {mission.ZED_HFOV_DEG:.0f} deg   baseline "
-                        f"{mission.ZED_BASELINE_M*1000:.0f} mm   ORB features")
+                        f"ZED 2i LEFT {mission.ZED_WIDTH_FULL}x{mission.ZED_HEIGHT_FULL} HD720"
+                        "  -  VSLAM FEATURE TRACKING",
+                        "ORB + PnP-RANSAC stereo front-end, as RTAB-Map runs in "
+                        "the ROS 2 stack")
         vis = rgb.copy()
         if rep["keypoints"] is not None:
             for (u, v) in rep["keypoints"][::2]:
@@ -527,6 +525,7 @@ class Demo:
             ("drift vs truth", f"{s['err']:.2f} m  ({100*s['err']/max(s['travelled'],1e-3):.2f}% of path)",
              hud.GOOD if s["err"] < 3.0 else hud.ACCENT),
             ("keyframes", f"{rep['keyframes']}   lost {rep['lost_frames']}", hud.DIM),
+            ("SLAM", "RTAB-Map class stereo VSLAM  (no GNSS, no wheel odom)", hud.DIM),
         ]
         right = [
             ("cmd v / w", f"{s['v']:.2f} m/s   {s['w']:+.2f} rad/s", hud.TXT),
@@ -630,13 +629,15 @@ def main():
     ap.add_argument("--seed", type=int, default=mission.SEED)
     ap.add_argument("--duration", type=float, default=mission.MAX_MISSION_S)
     ap.add_argument("--video", default=str(OUT / "sih26126_demo.mp4"))
+    ap.add_argument("--speed", type=int, default=mission.VIDEO_SPEEDUP,
+                    help="compose every Nth control step -> Nx real-time video")
     ap.add_argument("--fast", action="store_true", help="skip video, run headless scoring")
     args = ap.parse_args()
 
     print("=" * 78)
     print(" SIH26126  GPS-DENIED UGV NAVIGATION  -  end-to-end demo")
     print("=" * 78)
-    demo = Demo(args.seed, args.duration, args.fast)
+    demo = Demo(args.seed, args.duration, args.fast, args.speed)
     demo.build_geo()
     demo.build_route()
     demo.build_sim()
