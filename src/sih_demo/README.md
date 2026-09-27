@@ -9,6 +9,15 @@ end to end:
 ./run_demo.sh --speed 3       # ~55 s
 ```
 
+```bash
+./run_demo.sh --live          # interactive 3D window instead of a video
+```
+
+`--live` opens MuJoCo's viewer and runs the identical estimation and control
+path — only the output differs. Drag to orbit, scroll to zoom, double-click the
+rover then Ctrl+drag to follow it. Needs a display; the video path is headless
+and works over SSH.
+
 The video plays at 2x real time by default (stated in the header bar); physics
 and control always run at full rate, only dashboard frames are decimated.
 

@@ -243,6 +243,134 @@ class Demo:
             control_hz=mission.CONTROL_HZ,
             wall_clock_s=res["wall_s"])
 
+    def run_live(self):
+        """Drive the same mission in MuJoCo's interactive viewer.
+
+        Identical estimation and control path to run() -- only the output
+        differs: an orbitable 3D window instead of a composed video. Use it to
+        show the simulation live; use run() to produce the submission video.
+        """
+        import mujoco.viewer
+
+        dt_ctrl = 1.0 / mission.CONTROL_HZ
+        n_sub = max(1, int(round(dt_ctrl / mission.SIM_DT)))
+        gt_track, est_track = [], []
+        min_true_clear, total_collisions, reached = 99.0, 0, False
+        k = 0
+
+        print("[live] opening viewer -- drag to orbit, scroll to zoom, "
+              "double-click the rover then Ctrl+drag to follow it")
+        with mujoco.viewer.launch_passive(self.m, self.d,
+                                          show_left_ui=False,
+                                          show_right_ui=False) as viewer:
+            viewer.cam.distance = 12.0
+            viewer.cam.elevation = -25.0
+            wall0 = time.time()
+            while viewer.is_running() and self.d.time < self.duration:
+                gx_, gy_, gyaw, _, _ = self.ground_truth()
+                rgb, depth = self.zed.capture(self.d)
+                rep = self.slam.track(rgb, depth)
+                T_wc = rep["T_world_cam"]
+                T_wb = T_wc @ sensors.T_OPT_BODY
+                ex, ey, eyaw = T_wb[0, 3], T_wb[1, 3], yaw_of(T_wb[:3, :3])
+
+                pts_c = self.zed.deproject(depth, stride=3)
+                obs_xy = free_xy = np.zeros((0, 2))
+                if len(pts_c):
+                    rng_c = np.linalg.norm(pts_c, axis=1)
+                    keep = rng_c < 12.0
+                    pts_c, rng_c = pts_c[keep], rng_c[keep]
+                    pts_w = (T_wc[:3, :3] @ pts_c.T).T + T_wc[:3, 3]
+                if len(pts_c):
+                    ground = self.prior.elevation(pts_w[:, 0], pts_w[:, 1])
+                    resid = pts_w[:, 2] - ground
+                    dxy = pts_w[:, :2] - np.array([ex, ey])
+                    A = np.column_stack([np.ones(len(dxy)), dxy])
+                    sel = resid < np.quantile(resid, 0.62)
+                    coef = np.zeros(3)
+                    if sel.sum() > 30:
+                        coef = np.linalg.lstsq(A[sel], resid[sel], rcond=None)[0]
+                        r2 = resid - A @ coef
+                        sel2 = np.abs(r2) < 0.30
+                        if sel2.sum() > 30:
+                            coef = np.linalg.lstsq(A[sel2], resid[sel2], rcond=None)[0]
+                    hgt = resid - A @ coef
+                    sigma = rng_c ** 2 * 0.16 / (self.zed.fx * self.zed.baseline)
+                    slope = self.prior.slope_deg(pts_w[:, 0], pts_w[:, 1],
+                                                 eps=self.prior.res)
+                    thr = (0.30 + 2.5 * sigma
+                           + 1.4 * np.tan(np.radians(slope)) * self.prior.res)
+                    is_obs = (hgt > thr) & (hgt < 3.5) & (rng_c < 8.0)
+                    obs_xy = pts_w[is_obs][:, :2]
+                    free_xy = pts_w[hgt <= thr * 0.7][:, :2]
+
+                self.costmap.recenter(ex, ey)
+                self.costmap.integrate(obs_xy, free_xy)
+
+                carrot, _ = planner.carrot_on_path(self.route, (ex, ey, eyaw))
+                dist_goal = float(np.linalg.norm(self.goal_xy - np.array([ex, ey])))
+                if dist_goal < mission.GOAL_TOLERANCE_M * 2.2:
+                    carrot = self.goal_xy
+                self._recent.append((self.d.time, gx_, gy_))
+                while self._recent and self.d.time - self._recent[0][0] > 4.0:
+                    self._recent.pop(0)
+                stuck = (len(self._recent) > 40 and
+                         np.hypot(gx_ - self._recent[0][1],
+                                  gy_ - self._recent[0][2]) < 0.45)
+                v, w, dinfo = self.dwa.plan((ex, ey, eyaw), carrot, self.costmap,
+                                            self.v_cmd, terrain=self.gplanner,
+                                            allow_reverse=stuck)
+                if stuck and self.d.time - self._last_reset > 10.0:
+                    self.costmap.reset()
+                    self._last_reset = self.d.time
+                self.v_cmd = v
+                self.drive(v, w)
+
+                tc = self.true_clearance(gx_, gy_)
+                min_true_clear = min(min_true_clear, tc)
+                total_collisions += self.collisions()
+                gt_track.append((gx_, gy_)); est_track.append((ex, ey))
+                self.log.append(dict(t=round(self.d.time, 3),
+                                     gt=(round(gx_, 3), round(gy_, 3)),
+                                     est=(round(ex, 3), round(ey, 3)),
+                                     err=round(float(np.hypot(ex - gx_, ey - gy_)), 4),
+                                     v=round(v, 3), w=round(w, 3),
+                                     clearance=round(tc, 3),
+                                     features=rep["n_features"],
+                                     inliers=rep["n_inliers"],
+                                     keyframes=rep["keyframes"], mode=dinfo["mode"]))
+
+                if dist_goal < mission.GOAL_TOLERANCE_M:
+                    reached = True
+
+                for _ in range(n_sub):
+                    mujoco.mj_step(self.m, self.d)
+                viewer.sync()
+
+                k += 1
+                if k % 40 == 0:
+                    print(f"  t={self.d.time:6.1f}s  drift={np.hypot(ex-gx_, ey-gy_):5.2f} m"
+                          f"  clear={tc:5.2f} m  contacts={total_collisions}  {dinfo['mode']}")
+
+                lag = (self.d.time) - (time.time() - wall0)
+                if lag > 0:
+                    time.sleep(min(lag, 0.05))     # pace to real time
+
+                if reached:
+                    print("  GOAL REACHED -- close the viewer window to finish")
+                    for _ in range(int(2.0 / dt_ctrl)):
+                        if not viewer.is_running():
+                            break
+                        mujoco.mj_step(self.m, self.d)
+                        viewer.sync()
+                        time.sleep(dt_ctrl)
+                    break
+
+        return dict(reached=reached, frames=k, wall_s=round(time.time() - wall0, 1),
+                    gt_track=gt_track, est_track=est_track,
+                    min_true_clear=round(min_true_clear, 3),
+                    collisions=total_collisions)
+
     def run(self, video_path: pathlib.Path):
         import imageio.v2 as imageio
         writer = imageio.get_writer(
@@ -631,6 +759,8 @@ def main():
     ap.add_argument("--video", default=str(OUT / "sih26126_demo.mp4"))
     ap.add_argument("--speed", type=int, default=mission.VIDEO_SPEEDUP,
                     help="compose every Nth control step -> Nx real-time video")
+    ap.add_argument("--live", action="store_true",
+                    help="open MuJoCo's interactive 3D viewer instead of writing a video")
     ap.add_argument("--fast", action="store_true", help="skip video, run headless scoring")
     args = ap.parse_args()
 
@@ -643,16 +773,21 @@ def main():
     demo.build_sim()
     demo.build_stack()
     print("-" * 78)
-    res = demo.run(pathlib.Path(args.video))
+    res = demo.run_live() if args.live else demo.run(pathlib.Path(args.video))
+    if args.live:
+        demo.summary = demo.score(res)
     print("-" * 78)
 
-    summary = dict(demo.summary, video=str(args.video))
+    summary = dict(demo.summary)
+    if not args.live:
+        summary["video"] = str(args.video)
     (OUT / "demo_summary.json").write_text(json.dumps(summary, indent=2))
     (OUT / "telemetry.json").write_text(json.dumps(demo.log))
 
     print(json.dumps(summary, indent=2))
     print("-" * 78)
-    print(f"video   -> {args.video}")
+    if not args.live:
+        print(f"video   -> {args.video}")
     print(f"summary -> {OUT/'demo_summary.json'}")
 
 
