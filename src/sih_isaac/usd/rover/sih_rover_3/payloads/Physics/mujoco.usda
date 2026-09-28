@@ -1,0 +1,211 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.1.3"
+    }
+    defaultPrim = "sih_rover"
+    doc = """Generated from Composed Stage of root layer /tmp/tmppfgmfa66/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_9rk_objp/usdex_sih_rover/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_9rk_objp/temp_sih_rover/sih_rover.usd
+
+
+Generated from Composed Stage of root layer /home/qbotix-rover/sih_ws/src/sih_isaac/usd/rover/sih_rover_3/payloads/base.usd
+"""
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [
+        @./physics.usda@
+    ]
+    upAxis = "Z"
+)
+
+over "sih_rover"
+{
+    over "Physics"
+    {
+        def MjcActuator "wheel_fl_joint_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, 0, -34.906585693359375, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:forceRange:max = inf
+            uniform double mjc:forceRange:min = -inf
+            uniform double[] mjc:gainPrm = [34.906585693359375, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+            custom rel mjc:target
+            prepend rel mjc:target = </sih_rover/Physics/wheel_fl_joint>
+        }
+
+        def MjcActuator "wheel_fr_joint_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, 0, -34.906585693359375, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:forceRange:max = inf
+            uniform double mjc:forceRange:min = -inf
+            uniform double[] mjc:gainPrm = [34.906585693359375, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+            custom rel mjc:target
+            prepend rel mjc:target = </sih_rover/Physics/wheel_fr_joint>
+        }
+
+        def MjcActuator "wheel_rl_joint_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, 0, -34.906585693359375, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:forceRange:max = inf
+            uniform double mjc:forceRange:min = -inf
+            uniform double[] mjc:gainPrm = [34.906585693359375, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+            custom rel mjc:target
+            prepend rel mjc:target = </sih_rover/Physics/wheel_rl_joint>
+        }
+
+        def MjcActuator "wheel_rr_joint_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, 0, -34.906585693359375, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:forceRange:max = inf
+            uniform double mjc:forceRange:min = -inf
+            uniform double[] mjc:gainPrm = [34.906585693359375, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+            custom rel mjc:target
+            prepend rel mjc:target = </sih_rover/Physics/wheel_rr_joint>
+        }
+
+        over "wheel_fl_joint" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+        }
+
+        over "wheel_fr_joint" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+        }
+
+        over "wheel_rl_joint" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+        }
+
+        over "wheel_rr_joint" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+        }
+
+        over "imu_joint"
+        {
+        }
+
+        over "camera_joint"
+        {
+        }
+
+        over "camera_optical_joint"
+        {
+        }
+
+        over "base_link_gt_joint"
+        {
+        }
+    }
+
+    over "Geometry"
+    {
+        over "base_link"
+        {
+            over "wheel_fl_link"
+            {
+                over "cylinder"
+                {
+                }
+
+                over "cylinder_1"
+                {
+                }
+            }
+
+            over "wheel_fr_link"
+            {
+                over "cylinder"
+                {
+                }
+
+                over "cylinder_1"
+                {
+                }
+            }
+
+            over "wheel_rl_link"
+            {
+                over "cylinder"
+                {
+                }
+
+                over "cylinder_1"
+                {
+                }
+            }
+
+            over "wheel_rr_link"
+            {
+                over "cylinder"
+                {
+                }
+
+                over "cylinder_1"
+                {
+                }
+            }
+
+            over "camera_link"
+            {
+                over "camera_optical_frame"
+                {
+                }
+
+                over "box"
+                {
+                }
+            }
+
+            over "imu_link"
+            {
+            }
+
+            over "base_link_gt"
+            {
+            }
+
+            over "box"
+            {
+            }
+
+            over "box_1"
+            {
+            }
+        }
+    }
+
+    over "Materials"
+    {
+        over "chassis_grey"
+        {
+        }
+
+        over "wheel_black"
+        {
+        }
+
+        over "sensor_orange"
+        {
+        }
+    }
+}
+

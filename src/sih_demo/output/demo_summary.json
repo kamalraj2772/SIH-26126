@@ -1,0 +1,47 @@
+{
+  "seed": 42,
+  "reached_goal": true,
+  "goal_utm": {
+    "easting": 403562.518,
+    "northing": 1450024.116,
+    "epsg": 32644,
+    "lat": 13.1150092,
+    "lon": 80.1103155
+  },
+  "utm_roundtrip_error_mm": 0.0,
+  "geotiff": {
+    "path": "/home/qbotix-rover/sih_ws/src/sih_demo/output/prior_dem_utm44n.tif",
+    "size_px": 257,
+    "res_m": 0.5859375,
+    "crs": "EPSG:32644",
+    "transform": [
+      0.5859375,
+      0.0,
+      403431.22492044437,
+      0.0,
+      -0.5859375,
+      1450065.4087343551
+    ]
+  },
+  "global_route_m": 125.46,
+  "path_travelled_m": 123.81,
+  "final_position_error_m": 5.678,
+  "vslam": {
+    "final_drift_m": 5.334,
+    "mean_drift_m": 2.027,
+    "max_drift_m": 5.335,
+    "drift_pct_of_path": 4.308,
+    "keyframes": 263,
+    "lost_frames": 0
+  },
+  "obstacles_in_corridor": 21,
+  "collision_free": true,
+  "safety_margin_maintained": false,
+  "contact_events_with_obstacles": 0,
+  "min_obstacle_clearance_m": 0.616,
+  "robot_radius_m": 0.55,
+  "required_clearance_m": 0.75,
+  "mission_time_s": 131.12,
+  "control_hz": 20.0,
+  "wall_clock_s": 133.2
+}

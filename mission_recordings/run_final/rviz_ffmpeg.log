@@ -1,0 +1,4 @@
+[x11grab @ 0x3c56aec0] Capture area 1628x1066 at position 118.28 outside the screen size 1920x1080
+[in#0 @ 0x3c56ab80] Error opening input: Invalid argument
+Error opening input file :1+118,28.
+Error opening input files: Invalid argument

@@ -1,34 +1,25 @@
-# colcon workspace artifacts
+# ROS 2 generated files
 build/
 install/
 log/
 
-# generated simulation assets (reproducible from seed via sih_sim scripts)
-src/sih_sim/worlds/generated/
-src/sih_sim/heightmaps/generated/
-
-# perception model weights and datasets (Phase 3)
-src/sih_perception/models/
-src/sih_perception/dataset/
-*.pt
-*.engine
-*.onnx
-
-# python
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
 
-# editors
+# IDE/editor
 .vscode/
-*.swp
+.idea/
 
-# demo virtualenv and generated demo artefacts
-.demoenv/
-src/sih_demo/output/
+# OS files
+.DS_Store
+Thumbs.db
 
-# Isaac Sim generated world data and USD stages (rebuilt by run_isaac.sh)
-src/sih_isaac/generated/
-src/sih_isaac/usd/
+# Large/generated recordings
+*.mp4
+*.mkv
+*.bag
+*.db3
 
-# package downloads
-*.deb
+# Generated simulation/build artifacts
+*.pyc

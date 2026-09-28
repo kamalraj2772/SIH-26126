@@ -1,0 +1,752 @@
+<mujoco model="sih26126_demo">
+  <compiler angle="degree" autolimits="true" texturedir="/home/qbotix-rover/sih_ws/src/sih_demo/output"/>
+  <option timestep="0.004" gravity="0 0 -9.81" integrator="implicitfast"
+          cone="elliptic" impratio="10"/>
+  <size njmax="4000" nconmax="1500"/>
+
+  <statistic extent="60" center="0 0 1" meansize="0.15"/>
+
+  <visual>
+    <headlight ambient="0.38 0.38 0.40" diffuse="0.32 0.32 0.32" specular="0.1 0.1 0.1"/>
+    <rgba haze="0.72 0.78 0.86 1"/>
+    <!-- fractions of stat.extent (60 m): near 0.30 m, far 300 m, fog 90-270 m -->
+    <map znear="0.005" zfar="5.0" shadowclip="1.2" shadowscale="0.7"
+         fogstart="1.5" fogend="4.5"/>
+    <quality shadowsize="8192" offsamples="8"/>
+    <global offwidth="1920" offheight="1080" azimuth="130" elevation="-22"/>
+  </visual>
+
+  <asset>
+    <texture name="sky" type="skybox" builtin="gradient" width="512" height="1024"
+             rgb1="0.35 0.52 0.78" rgb2="0.82 0.88 0.94"/>
+    <texture name="terrain_tex" type="2d" file="terrain_texture.png"/>
+    <material name="terrain_mat" texture="terrain_tex" texuniform="false"
+              specular="0.05" shininess="0.02" reflectance="0.0"/>
+    <material name="bark" rgba="0.31 0.24 0.17 1" specular="0.05" shininess="0.05"/>
+    <material name="foliage" rgba="0.21 0.36 0.17 1" specular="0.08" shininess="0.1"/>
+    <material name="boulder" rgba="0.46 0.44 0.41 1" specular="0.12" shininess="0.15"/>
+    <material name="chassis" rgba="0.82 0.52 0.10 1" specular="0.35" shininess="0.5"/>
+    <material name="chassis_dark" rgba="0.16 0.17 0.19 1" specular="0.4" shininess="0.6"/>
+    <material name="tyre" rgba="0.09 0.09 0.10 1" specular="0.08" shininess="0.1"/>
+    <material name="zed" rgba="0.13 0.14 0.16 1" specular="0.6" shininess="0.8"/>
+    <material name="lens" rgba="0.05 0.09 0.16 1" specular="1.0" shininess="1.0"/>
+    <texture name="outfield_tex" type="2d" builtin="flat" width="16" height="16"
+             rgb1="0.44 0.48 0.31"/>
+    <material name="outfield_mat" texture="outfield_tex" texrepeat="1 1"
+              specular="0.02" shininess="0.01"/>
+    <hfield name="terrain" nrow="257" ncol="257"
+            size="75.0 75.0 5.4143 2.0"/>
+  </asset>
+
+  <worldbody>
+    <light name="sun" directional="true" castshadow="true" pos="-30 -40 60"
+           dir="0.42 0.56 -0.72" diffuse="0.95 0.92 0.85" specular="0.25 0.25 0.22"/>
+    <light name="fill" directional="true" castshadow="false" pos="40 30 40"
+           dir="-0.5 -0.4 -0.76" diffuse="0.22 0.24 0.30" specular="0 0 0"/>
+    <geom name="outfield" type="plane" size="400 400 5" pos="0 0 -1.5348"
+          material="outfield_mat" contype="0" conaffinity="0"/>
+    <geom name="terrain_geom" type="hfield" hfield="terrain" pos="0 0 -1.5148"
+          material="terrain_mat" friction="1.0 0.01 0.0005" condim="3"
+          contype="1" conaffinity="1"/>
+    
+    <body name="obs_0" pos="-50.000 13.900 0.191" euler="0 0 81.9">
+      <geom type="ellipsoid" size="0.477 0.523 0.371" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_1" pos="-49.620 18.120 0.226" euler="0 0 96.4">
+      <geom type="ellipsoid" size="0.499 0.461 0.391" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_2" pos="-42.000 15.860 0.251" euler="0 0 86.1">
+      <geom type="ellipsoid" size="0.727 0.792 0.505" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_3" pos="-34.000 13.810 0.216" euler="0 0 46.8">
+      <geom type="ellipsoid" size="0.679 0.625 0.446" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_4" pos="-34.080 18.170 0.236" euler="0 0 66.9">
+      <geom type="ellipsoid" size="0.651 0.532 0.476" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_5" pos="-26.000 14.000 0.296" euler="0 0 30.1">
+      <geom type="ellipsoid" size="0.522 0.519 0.455" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_6" pos="-26.530 18.050 0.055">
+      <geom type="cylinder" size="0.565 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="2.26 2.26 1.76"
+            pos="0 0 4.64" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_7" pos="-20.050 19.200 0.014">
+      <geom type="cylinder" size="0.454 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.82 1.82 1.42"
+            pos="0 0 4.40" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_8" pos="-12.000 16.870 0.306" euler="0 0 102.2">
+      <geom type="ellipsoid" size="0.747 0.704 0.599" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_9" pos="-11.700 21.010 0.228" euler="0 0 109.4">
+      <geom type="ellipsoid" size="0.625 0.624 0.479" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_10" pos="-5.000 16.590 0.219" euler="0 0 79.4">
+      <geom type="ellipsoid" size="0.643 0.543 0.433" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_11" pos="-4.560 21.460 0.010">
+      <geom type="cylinder" size="0.684 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="2.74 2.74 2.14"
+            pos="0 0 4.91" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_12" pos="5.000 19.280 -0.023">
+      <geom type="cylinder" size="0.360 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.44 1.44 1.12"
+            pos="0 0 4.19" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_13" pos="13.000 19.090 -0.009">
+      <geom type="cylinder" size="0.374 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.50 1.50 1.17"
+            pos="0 0 4.22" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_14" pos="22.470 18.040 0.290" euler="0 0 41.2">
+      <geom type="ellipsoid" size="0.670 0.739 0.584" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_15" pos="19.970 22.080 0.048">
+      <geom type="cylinder" size="0.500 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="2.00 2.00 1.56"
+            pos="0 0 4.50" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_16" pos="27.000 19.930 0.184" euler="0 0 76.6">
+      <geom type="ellipsoid" size="0.484 0.466 0.364" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_17" pos="27.400 24.060 0.213" euler="0 0 126.9">
+      <geom type="ellipsoid" size="0.466 0.531 0.397" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_18" pos="35.000 23.040 0.195" euler="0 0 169.4">
+      <geom type="ellipsoid" size="0.568 0.515 0.376" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_19" pos="44.600 24.400 0.246" euler="0 0 128.0">
+      <geom type="ellipsoid" size="0.641 0.687 0.442" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="obs_20" pos="41.650 27.750 -0.009">
+      <geom type="cylinder" size="0.571 1.700" pos="0 0 1.700"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="2.28 2.28 1.78"
+            pos="0 0 4.66" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_0" pos="-54.624 47.727 0.044">
+      <geom type="cylinder" size="0.146 2.136" pos="0 0 2.136"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.07 1.07 0.83"
+            pos="0 0 4.86" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_1" pos="-54.165 38.515 -0.043">
+      <geom type="cylinder" size="0.130 1.867" pos="0 0 1.867"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.09 1.09 0.85"
+            pos="0 0 4.34" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_2" pos="-49.322 53.978 0.026">
+      <geom type="cylinder" size="0.151 1.295" pos="0 0 1.295"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.25 1.25 0.98"
+            pos="0 0 3.28" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_3" pos="-40.848 46.029 -0.011">
+      <geom type="cylinder" size="0.214 1.965" pos="0 0 1.965"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.27 1.27 0.99"
+            pos="0 0 4.63" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_4" pos="-56.775 50.844 0.019">
+      <geom type="cylinder" size="0.210 1.465" pos="0 0 1.465"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.13 1.13 0.88"
+            pos="0 0 3.55" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_5" pos="-47.626 52.551 0.028">
+      <geom type="cylinder" size="0.212 2.095" pos="0 0 2.095"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.30 1.30 1.01"
+            pos="0 0 4.90" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_6" pos="-51.139 33.922 -0.012">
+      <geom type="cylinder" size="0.180 1.644" pos="0 0 1.644"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.06 1.06 0.83"
+            pos="0 0 3.87" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_7" pos="-35.834 38.026 0.024">
+      <geom type="cylinder" size="0.168 1.944" pos="0 0 1.944"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.88 0.88 0.68"
+            pos="0 0 4.37" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_8" pos="-47.375 40.402 0.036">
+      <geom type="cylinder" size="0.140 1.894" pos="0 0 1.894"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.25 1.25 0.97"
+            pos="0 0 4.47" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_9" pos="-55.583 53.581 0.053">
+      <geom type="cylinder" size="0.121 1.356" pos="0 0 1.356"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.00 1.00 0.78"
+            pos="0 0 3.26" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_10" pos="-36.277 56.787 -0.023">
+      <geom type="cylinder" size="0.190 2.219" pos="0 0 2.219"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.05 1.05 0.82"
+            pos="0 0 5.02" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_11" pos="-47.866 56.362 -0.019">
+      <geom type="cylinder" size="0.126 1.371" pos="0 0 1.371"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.24 1.24 0.96"
+            pos="0 0 3.42" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_12" pos="-46.356 49.243 -0.005">
+      <geom type="cylinder" size="0.122 2.155" pos="0 0 2.155"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.15 1.15 0.90"
+            pos="0 0 4.94" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_13" pos="-55.437 54.927 0.067">
+      <geom type="cylinder" size="0.149 1.979" pos="0 0 1.979"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.11 1.11 0.87"
+            pos="0 0 4.57" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_14" pos="-50.050 39.058 0.018">
+      <geom type="cylinder" size="0.180 2.065" pos="0 0 2.065"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.03 1.03 0.80"
+            pos="0 0 4.69" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_15" pos="-57.372 46.080 0.044">
+      <geom type="cylinder" size="0.169 1.328" pos="0 0 1.328"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.08 1.08 0.84"
+            pos="0 0 3.25" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_16" pos="-33.045 55.217 -0.027">
+      <geom type="cylinder" size="0.127 1.432" pos="0 0 1.432"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.11 1.11 0.86"
+            pos="0 0 3.47" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_17" pos="-34.746 45.631 -0.018">
+      <geom type="cylinder" size="0.141 1.582" pos="0 0 1.582"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.86 0.86 0.67"
+            pos="0 0 3.63" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_18" pos="-54.900 37.023 -0.051">
+      <geom type="cylinder" size="0.156 2.088" pos="0 0 2.088"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.30 1.30 1.01"
+            pos="0 0 4.89" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_19" pos="-33.674 42.799 -0.004">
+      <geom type="cylinder" size="0.120 1.276" pos="0 0 1.276"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.35 1.35 1.06"
+            pos="0 0 3.30" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_20" pos="-35.875 49.304 -0.040">
+      <geom type="cylinder" size="0.219 1.924" pos="0 0 1.924"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.09 1.09 0.85"
+            pos="0 0 4.45" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_21" pos="-41.780 39.389 -0.015">
+      <geom type="cylinder" size="0.215 1.409" pos="0 0 1.409"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.90 0.90 0.70"
+            pos="0 0 3.31" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_22" pos="-39.107 43.627 -0.002">
+      <geom type="cylinder" size="0.213 1.619" pos="0 0 1.619"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.85 0.85 0.66"
+            pos="0 0 3.71" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_23" pos="-43.483 42.781 0.034">
+      <geom type="cylinder" size="0.209 1.704" pos="0 0 1.704"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.99 0.99 0.77"
+            pos="0 0 3.95" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_24" pos="-40.746 50.118 -0.003">
+      <geom type="cylinder" size="0.220 2.213" pos="0 0 2.213"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.09 1.09 0.85"
+            pos="0 0 5.03" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_25" pos="-42.261 46.001 -0.030">
+      <geom type="cylinder" size="0.217 1.571" pos="0 0 1.571"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.40 1.40 1.09"
+            pos="0 0 3.91" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_26" pos="-52.348 37.479 -0.022">
+      <geom type="cylinder" size="0.124 1.695" pos="0 0 1.695"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.07 1.07 0.83"
+            pos="0 0 3.98" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_27" pos="-37.607 39.758 0.016">
+      <geom type="cylinder" size="0.183 1.960" pos="0 0 1.960"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.20 1.20 0.94"
+            pos="0 0 4.58" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_28" pos="-53.888 42.599 -0.040">
+      <geom type="cylinder" size="0.186 2.222" pos="0 0 2.222"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.85 0.85 0.67"
+            pos="0 0 4.91" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_29" pos="-42.797 38.634 -0.022">
+      <geom type="cylinder" size="0.141 1.840" pos="0 0 1.840"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.28 1.28 1.00"
+            pos="0 0 4.38" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_30" pos="-38.806 50.504 -0.019">
+      <geom type="cylinder" size="0.170 1.600" pos="0 0 1.600"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.22 1.22 0.95"
+            pos="0 0 3.87" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_31" pos="-40.118 35.069 -0.032">
+      <geom type="cylinder" size="0.180 1.422" pos="0 0 1.422"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.90 0.90 0.70"
+            pos="0 0 3.34" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_32" pos="-42.639 56.635 -0.021">
+      <geom type="cylinder" size="0.153 2.077" pos="0 0 2.077"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.13 1.13 0.88"
+            pos="0 0 4.77" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_33" pos="-32.533 33.104 0.044">
+      <geom type="cylinder" size="0.217 2.081" pos="0 0 2.081"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.00 1.00 0.78"
+            pos="0 0 4.71" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_34" pos="-45.467 39.786 0.021">
+      <geom type="cylinder" size="0.216 1.338" pos="0 0 1.338"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.39 1.39 1.09"
+            pos="0 0 3.44" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_35" pos="-55.907 46.741 0.044">
+      <geom type="cylinder" size="0.205 2.169" pos="0 0 2.169"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.10 1.10 0.86"
+            pos="0 0 4.94" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_36" pos="-57.373 47.782 0.019">
+      <geom type="cylinder" size="0.176 1.719" pos="0 0 1.719"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.86 0.86 0.67"
+            pos="0 0 3.91" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_37" pos="-35.745 54.590 -0.038">
+      <geom type="cylinder" size="0.182 2.149" pos="0 0 2.149"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.40 1.40 1.09"
+            pos="0 0 5.06" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_38" pos="-33.642 50.997 -0.008">
+      <geom type="cylinder" size="0.155 1.943" pos="0 0 1.943"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="0.90 0.90 0.71"
+            pos="0 0 4.38" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="grove_39" pos="-52.882 43.367 -0.036">
+      <geom type="cylinder" size="0.153 1.296" pos="0 0 1.296"
+            material="bark" contype="1" conaffinity="1"/>
+      <geom type="ellipsoid" size="1.01 1.01 0.79"
+            pos="0 0 3.15" material="foliage"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_0" pos="54.485 -51.026 0.102">
+      <geom type="ellipsoid" size="0.406 0.365 0.281" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_1" pos="44.649 -60.089 0.072">
+      <geom type="ellipsoid" size="0.127 0.114 0.115" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_2" pos="47.586 -51.196 0.202">
+      <geom type="ellipsoid" size="0.544 0.489 0.371" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_3" pos="56.929 -50.455 0.065">
+      <geom type="ellipsoid" size="0.244 0.220 0.165" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_4" pos="47.923 -66.943 0.171">
+      <geom type="ellipsoid" size="0.440 0.396 0.269" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_5" pos="43.474 -56.082 0.114">
+      <geom type="ellipsoid" size="0.347 0.313 0.269" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_6" pos="64.440 -54.021 0.270">
+      <geom type="ellipsoid" size="0.541 0.487 0.462" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_7" pos="55.637 -53.894 0.045">
+      <geom type="ellipsoid" size="0.199 0.179 0.144" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_8" pos="55.410 -45.341 0.068">
+      <geom type="ellipsoid" size="0.168 0.151 0.115" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_9" pos="52.755 -47.012 0.082">
+      <geom type="ellipsoid" size="0.282 0.254 0.250" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_10" pos="63.305 -52.645 0.286">
+      <geom type="ellipsoid" size="0.568 0.511 0.505" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_11" pos="47.460 -48.117 0.159">
+      <geom type="ellipsoid" size="0.504 0.454 0.312" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_12" pos="42.636 -66.181 0.208">
+      <geom type="ellipsoid" size="0.509 0.459 0.458" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_13" pos="57.029 -61.201 0.024">
+      <geom type="ellipsoid" size="0.120 0.108 0.101" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_14" pos="49.104 -66.400 0.083">
+      <geom type="ellipsoid" size="0.140 0.126 0.087" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_15" pos="64.921 -53.564 0.114">
+      <geom type="ellipsoid" size="0.187 0.168 0.138" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_16" pos="43.090 -53.184 0.129">
+      <geom type="ellipsoid" size="0.435 0.391 0.342" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_17" pos="60.075 -49.631 0.173">
+      <geom type="ellipsoid" size="0.382 0.344 0.251" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_18" pos="53.651 -56.873 0.157">
+      <geom type="ellipsoid" size="0.387 0.348 0.359" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_19" pos="49.417 -43.890 0.020">
+      <geom type="ellipsoid" size="0.175 0.157 0.107" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_20" pos="62.236 -42.703 0.163">
+      <geom type="ellipsoid" size="0.294 0.264 0.251" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_21" pos="65.198 -57.314 0.021">
+      <geom type="ellipsoid" size="0.158 0.142 0.102" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_22" pos="53.419 -51.911 0.054">
+      <geom type="ellipsoid" size="0.185 0.166 0.134" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_23" pos="50.607 -66.685 0.114">
+      <geom type="ellipsoid" size="0.195 0.175 0.120" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_24" pos="46.610 -53.592 0.251">
+      <geom type="ellipsoid" size="0.512 0.461 0.421" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_25" pos="55.926 -43.205 0.162">
+      <geom type="ellipsoid" size="0.310 0.279 0.265" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_26" pos="55.790 -50.813 0.135">
+      <geom type="ellipsoid" size="0.385 0.346 0.324" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_27" pos="49.282 -57.676 0.223">
+      <geom type="ellipsoid" size="0.471 0.424 0.420" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_28" pos="44.256 -56.404 0.123">
+      <geom type="ellipsoid" size="0.287 0.259 0.267" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_29" pos="47.470 -65.935 0.107">
+      <geom type="ellipsoid" size="0.185 0.167 0.165" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_30" pos="62.333 -63.988 0.080">
+      <geom type="ellipsoid" size="0.182 0.164 0.154" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_31" pos="64.829 -62.937 0.208">
+      <geom type="ellipsoid" size="0.489 0.440 0.387" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_32" pos="62.773 -45.579 0.250">
+      <geom type="ellipsoid" size="0.556 0.501 0.457" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_33" pos="42.722 -52.064 0.186">
+      <geom type="ellipsoid" size="0.526 0.474 0.481" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_34" pos="62.745 -44.301 0.158">
+      <geom type="ellipsoid" size="0.264 0.238 0.239" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_35" pos="57.077 -47.912 0.109">
+      <geom type="ellipsoid" size="0.297 0.268 0.245" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_36" pos="55.117 -53.033 0.128">
+      <geom type="ellipsoid" size="0.524 0.472 0.326" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_37" pos="48.391 -56.796 0.120">
+      <geom type="ellipsoid" size="0.259 0.233 0.217" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_38" pos="58.752 -60.439 0.052">
+      <geom type="ellipsoid" size="0.270 0.243 0.207" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_39" pos="53.463 -43.877 0.097">
+      <geom type="ellipsoid" size="0.159 0.143 0.135" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_40" pos="45.172 -57.484 0.109">
+      <geom type="ellipsoid" size="0.282 0.254 0.190" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_41" pos="62.371 -64.930 0.196">
+      <geom type="ellipsoid" size="0.396 0.356 0.335" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_42" pos="56.340 -58.728 0.174">
+      <geom type="ellipsoid" size="0.422 0.380 0.386" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_43" pos="55.713 -59.290 0.201">
+      <geom type="ellipsoid" size="0.546 0.492 0.458" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_44" pos="44.415 -45.132 0.189">
+      <geom type="ellipsoid" size="0.566 0.509 0.378" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_45" pos="67.089 -56.850 0.144">
+      <geom type="ellipsoid" size="0.384 0.346 0.303" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_46" pos="60.131 -56.965 0.246">
+      <geom type="ellipsoid" size="0.580 0.522 0.526" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_47" pos="61.582 -47.561 0.177">
+      <geom type="ellipsoid" size="0.382 0.344 0.307" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_48" pos="67.384 -49.905 0.228">
+      <geom type="ellipsoid" size="0.518 0.466 0.370" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_49" pos="60.560 -51.219 0.098">
+      <geom type="ellipsoid" size="0.160 0.144 0.127" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_50" pos="44.137 -66.199 0.099">
+      <geom type="ellipsoid" size="0.324 0.291 0.214" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_51" pos="54.747 -47.351 0.088">
+      <geom type="ellipsoid" size="0.303 0.272 0.253" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_52" pos="66.978 -52.949 0.194">
+      <geom type="ellipsoid" size="0.346 0.311 0.312" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_53" pos="44.835 -58.752 0.146">
+      <geom type="ellipsoid" size="0.353 0.318 0.271" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_54" pos="66.073 -51.106 0.073">
+      <geom type="ellipsoid" size="0.127 0.114 0.092" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_55" pos="61.371 -63.397 0.054">
+      <geom type="ellipsoid" size="0.158 0.142 0.147" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_56" pos="46.089 -51.112 0.275">
+      <geom type="ellipsoid" size="0.580 0.522 0.494" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_57" pos="66.994 -47.237 0.225">
+      <geom type="ellipsoid" size="0.580 0.522 0.409" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_58" pos="60.400 -48.256 0.178">
+      <geom type="ellipsoid" size="0.393 0.353 0.272" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    <body name="rock_59" pos="46.573 -55.281 0.125">
+      <geom type="ellipsoid" size="0.230 0.207 0.186" material="boulder"
+            contype="1" conaffinity="1"/>
+    </body>
+    
+    <body name="rover" pos="0 0 0">
+      <freejoint name="rover_free"/>
+      <site name="base_link" pos="0 0 0" size="0.01" rgba="1 0 0 0"/>
+      <geom name="chassis" type="box" size="0.38 0.3 0.11" material="chassis"
+            mass="17.0" contype="1" conaffinity="1"/>
+      <geom name="deck" type="box" size="0.26 0.23 0.045" pos="0.02 0 0.155"
+            material="chassis_dark" mass="2.0" contype="0" conaffinity="0"/>
+      <geom name="mast" type="cylinder" size="0.028 0.10" pos="0.32 0 0.30000000000000004"
+            material="chassis_dark" mass="0.3" contype="0" conaffinity="0"/>
+      <!-- ZED 2i stereo bar: 175 x 30 x 33 mm, 120 mm baseline -->
+      <geom name="zed_body" type="box" size="0.0875 0.0165 0.015"
+            pos="0.34 0.0 0.52" euler="0 -10.0 0"
+            material="zed" mass="0.17" contype="0" conaffinity="0"/>
+      <geom name="zed_lens_l" type="cylinder" size="0.011 0.004" zaxis="1 0 0"
+            pos="0.35300000000000004 0.060 0.52"
+            material="lens" mass="0.001" contype="0" conaffinity="0"/>
+      <geom name="zed_lens_r" type="cylinder" size="0.011 0.004" zaxis="1 0 0"
+            pos="0.35300000000000004 -0.060 0.52"
+            material="lens" mass="0.001" contype="0" conaffinity="0"/>
+
+      <!-- Left imager = the ZED's reference optical frame (REP-103 optical:
+           z forward, x right, y down), expressed here as MuJoCo xyaxes. -->
+      <camera name="zed_left" mode="fixed" fovy="69.570"
+              pos="0.36000000000000004 0.060 0.52"
+              xyaxes="0.000000 -1.000000 0.000000 0.173648 0.000000 0.984808"/>
+      <camera name="zed_right" mode="fixed" fovy="69.570"
+              pos="0.36000000000000004 -0.060 0.52"
+              xyaxes="0.000000 -1.000000 0.000000 0.173648 0.000000 0.984808"/>
+      <camera name="chase" mode="trackcom" pos="-6.5 0 3.2" xyaxes="0 -1 0 0.42 0 0.91"/>
+      
+        <body name="wheel_fl" pos="0.200 0.310 -0.050">
+          <joint name="wheel_fl_j" type="hinge" axis="0 1 0" damping="0.01"
+                 armature="0.010" frictionloss="0.005"/>
+          <geom name="wheel_fl_g" type="cylinder" size="0.160 0.090" zaxis="0 1 0"
+                material="tyre" friction="0.04 0.002 0.0001" condim="4"
+                mass="1.5" contype="1" conaffinity="1"/>
+        </body>
+        <body name="wheel_fr" pos="0.200 -0.310 -0.050">
+          <joint name="wheel_fr_j" type="hinge" axis="0 1 0" damping="0.01"
+                 armature="0.010" frictionloss="0.005"/>
+          <geom name="wheel_fr_g" type="cylinder" size="0.160 0.090" zaxis="0 1 0"
+                material="tyre" friction="0.04 0.002 0.0001" condim="4"
+                mass="1.5" contype="1" conaffinity="1"/>
+        </body>
+        <body name="wheel_rl" pos="-0.200 0.310 -0.050">
+          <joint name="wheel_rl_j" type="hinge" axis="0 1 0" damping="0.1"
+                 armature="0.010" frictionloss="0.06"/>
+          <geom name="wheel_rl_g" type="cylinder" size="0.160 0.090" zaxis="0 1 0"
+                material="tyre" friction="1.25 0.002 0.0001" condim="4"
+                mass="1.5" contype="1" conaffinity="1"/>
+        </body>
+        <body name="wheel_rr" pos="-0.200 -0.310 -0.050">
+          <joint name="wheel_rr_j" type="hinge" axis="0 1 0" damping="0.1"
+                 armature="0.010" frictionloss="0.06"/>
+          <geom name="wheel_rr_g" type="cylinder" size="0.160 0.090" zaxis="0 1 0"
+                material="tyre" friction="1.25 0.002 0.0001" condim="4"
+                mass="1.5" contype="1" conaffinity="1"/>
+        </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <velocity name="m_fl" joint="wheel_fl_j" kv="40" ctrlrange="-16 16"/>
+    <velocity name="m_fr" joint="wheel_fr_j" kv="40" ctrlrange="-16 16"/>
+    <velocity name="m_rl" joint="wheel_rl_j" kv="40" ctrlrange="-16 16"/>
+    <velocity name="m_rr" joint="wheel_rr_j" kv="40" ctrlrange="-16 16"/>
+  </actuator>
+
+  <sensor>
+    <framepos name="gt_pos" objtype="site" objname="base_link"/>
+    <framequat name="gt_quat" objtype="site" objname="base_link"/>
+    <gyro name="imu_gyro" site="base_link"/>
+    <accelerometer name="imu_acc" site="base_link"/>
+  </sensor>
+</mujoco>

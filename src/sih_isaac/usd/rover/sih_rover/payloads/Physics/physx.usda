@@ -1,0 +1,55 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.1.3"
+    }
+    defaultPrim = "sih_rover"
+    doc = """Generated from Composed Stage of root layer /tmp/tmprbln6j7e/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_z2ejl_80/usdex_sih_rover/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_z2ejl_80/temp_sih_rover/sih_rover.usd
+
+
+Generated from Composed Stage of root layer /home/qbotix-rover/sih_ws/src/sih_isaac/usd/rover/sih_rover/payloads/base.usd
+"""
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [
+        @./physics.usda@
+    ]
+    upAxis = "Z"
+)
+
+over "sih_rover"
+{
+    over "Physics"
+    {
+        over "wheel_fl_joint" (
+            prepend apiSchemas = ["PhysxJointAPI"]
+        )
+        {
+        }
+
+        over "wheel_fr_joint" (
+            prepend apiSchemas = ["PhysxJointAPI"]
+        )
+        {
+        }
+
+        over "wheel_rl_joint" (
+            prepend apiSchemas = ["PhysxJointAPI"]
+        )
+        {
+        }
+
+        over "wheel_rr_joint" (
+            prepend apiSchemas = ["PhysxJointAPI"]
+        )
+        {
+        }
+    }
+}
+

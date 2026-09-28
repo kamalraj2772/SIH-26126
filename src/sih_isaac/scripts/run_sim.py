@@ -34,6 +34,12 @@ USD_PATH = PKG / "usd/sih26126_world.usd"
 p = argparse.ArgumentParser()
 p.add_argument("--headless", action="store_true")
 p.add_argument("--duration", type=float, default=1e9, help="sim seconds")
+p.add_argument("--record", default=None, metavar="DIR",
+               help="record the three follow cameras to DIR/isaac_*.mp4")
+p.add_argument("--ffmpeg", default="ffmpeg", help="ffmpeg binary for --record")
+p.add_argument("--rec-size", default="1920x1080", metavar="WxH",
+               help="recording resolution (default 1080p)")
+p.add_argument("--rec-fps", type=int, default=15, help="recording frame rate")
 args = p.parse_args()
 
 from isaacsim import SimulationApp
@@ -125,6 +131,97 @@ def imu_read(t):
     return dict(lin_acc=quat_rot_inv(q, a_world),
                 ang_vel=quat_rot_inv(q, om),
                 orientation=q)
+
+# --- follow cameras: three third-person views that trail the rover -----------
+# Pure viewport/recording eye candy: no ROS topic, no TF. Poses are recomputed
+# every control tick from the rover's pose with a low-pass filter, so they
+# swing smoothly instead of being rigidly welded to the body (a parented
+# camera inherits every bump and jitter).
+#          name        (fwd, left, up) offset   aim z  up vector      tau  focal
+FOLLOW_SPECS = [
+    ("chase_cam", (-5.0, 0.0, 2.2),  0.6, (0.0, 0.0, 1.0), 0.60, 14.0),  # behind
+    ("side_cam",  (0.0, -6.5, 2.0),  0.6, (0.0, 0.0, 1.0), 0.60, 14.0),  # right side
+    ("top_cam",   (0.0, 0.0, 16.0),  0.0, (0.0, 1.0, 0.0), 0.80, 18.0),  # bird's eye
+]
+CHASE_TAU_AIM = 0.25  # s, look-target smoothing (all cameras)
+
+follow_ops, follow_state = {}, {}
+for _name, _off, _aimz, _up, _tau, _focal in FOLLOW_SPECS:
+    _cam = UsdGeom.Camera.Define(stage, f"/World/{_name}")
+    _cam.GetFocalLengthAttr().Set(_focal)
+    _cam.GetClippingRangeAttr().Set(Gf.Vec2f(0.1, 10000.0))
+    follow_ops[_name] = UsdGeom.Xformable(_cam.GetPrim()).MakeMatrixXform()
+    follow_state[_name] = dict(eye=None, aim=None)
+
+
+def follow_cams_update(pos, quat, dt):
+    w, x, y, z = quat
+    yaw = math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+    c, s = math.cos(yaw), math.sin(yaw)
+    for name, (fwd, left, up_off), aimz, up, tau, _f in FOLLOW_SPECS:
+        eye = np.array([pos[0] + fwd * c - left * s,
+                        pos[1] + fwd * s + left * c,
+                        pos[2] + up_off], dtype=np.float64)
+        if name != "top_cam":
+            eye[2] = max(eye[2], ground_z(eye[0], eye[1]) + 0.8)
+        aim = np.array([pos[0], pos[1], pos[2] + aimz], dtype=np.float64)
+        st = follow_state[name]
+        if st["eye"] is None:
+            st["eye"], st["aim"] = eye, aim
+        else:
+            st["eye"] += (eye - st["eye"]) * min(dt / tau, 1.0)
+            st["aim"] += (aim - st["aim"]) * min(dt / CHASE_TAU_AIM, 1.0)
+        view = Gf.Matrix4d()
+        view.SetLookAt(Gf.Vec3d(*st["eye"]), Gf.Vec3d(*st["aim"]),
+                       Gf.Vec3d(*up))
+        follow_ops[name].Set(view.GetInverse())
+
+
+if not args.headless:
+    try:
+        from omni.kit.viewport.utility import get_active_viewport
+        get_active_viewport().camera_path = "/World/chase_cam"
+        print("[sim] viewport -> /World/chase_cam (chase view)")
+    except Exception as e:  # viewport API varies across kit builds
+        print(f"[sim] WARNING: could not switch viewport to chase cam: {e}")
+
+# --- optional mission recording: follow cameras -> mp4 ------------------------
+REC_W, REC_H = (int(v) for v in args.rec_size.lower().split("x"))
+REC_FPS = args.rec_fps
+# the control tick is 30 Hz; capture every Nth tick to reach REC_FPS
+REC_EVERY = max(1, round(30.0 / REC_FPS))
+recorders = []
+rec_state = {"n": 0}
+if args.record:
+    import subprocess
+    rec_dir = pathlib.Path(args.record)
+    rec_dir.mkdir(parents=True, exist_ok=True)
+    for cam_name, label in (("chase_cam", "behind"), ("side_cam", "side"),
+                            ("top_cam", "top")):
+        rp = rep.create.render_product(f"/World/{cam_name}",
+                                       resolution=(REC_W, REC_H))
+        ann = rep.AnnotatorRegistry.get_annotator("rgb")
+        ann.attach(rp)
+        proc = subprocess.Popen(
+            [args.ffmpeg, "-y", "-loglevel", "error", "-f", "rawvideo",
+             "-pix_fmt", "rgba", "-s", f"{REC_W}x{REC_H}", "-r", str(REC_FPS),
+             "-i", "-", "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+             "-pix_fmt", "yuv420p", str(rec_dir / f"isaac_{label}.mp4")],
+            stdin=subprocess.PIPE)
+        recorders.append((ann, proc))
+    print(f"[sim] recording behind/side/top views at {REC_W}x{REC_H} "
+          f"@{REC_FPS}fps -> {rec_dir}", flush=True)
+
+
+def record_frames():
+    rec_state["n"] += 1
+    if rec_state["n"] % REC_EVERY:
+        return
+    for ann, proc in recorders:
+        d = ann.get_data()
+        if d is not None and getattr(d, "size", 0):
+            proc.stdin.write(d.tobytes())
+
 
 # --- render products + ROS2 camera/lidar graphs ------------------------------
 cam_rp = rep.create.render_product(CAM, resolution=(640, 360))
@@ -255,7 +352,8 @@ last_report = -5.0
 CTRL_DT = 1.0 / 30.0
 print("[sim] running -- waiting for /cmd_vel", flush=True)
 
-while app.is_running() and sim.current_time < args.duration:
+try:
+  while app.is_running() and sim.current_time < args.duration:
     sim.step(render=True)
     rclpy.spin_once(node, timeout_sec=0.0)
     t = sim.current_time
@@ -279,6 +377,9 @@ while app.is_running() and sim.current_time < args.duration:
     # on slopes (slip) and its yaw is unusable on a skid platform -- both are
     # still computed and logged for comparison.
     pos_b, quat_b = rover.get_world_pose()
+    follow_cams_update(pos_b, quat_b, dt)
+    if recorders:
+        record_frames()
     v_body = quat_rot_inv(quat_b, np.asarray(rover.get_linear_velocity()))
     om_body = quat_rot_inv(quat_b, np.asarray(rover.get_angular_velocity()))
     jv = rover.get_joint_velocities()
@@ -357,7 +458,19 @@ while app.is_running() and sim.current_time < args.duration:
               f"gt=({pos[0]:+7.2f},{pos[1]:+7.2f}) "
               f"odom=({ow['x']:+7.2f},{ow['y']:+7.2f})", flush=True)
 
-node.destroy_node()
-rclpy.shutdown()
+except KeyboardInterrupt:
+    print("[sim] interrupted", flush=True)
+finally:
+    for _ann, _proc in recorders:
+        try:
+            _proc.stdin.close()
+            _proc.wait(timeout=60)
+        except Exception as e:
+            print(f"[sim] recorder shutdown: {e}")
+    if recorders:
+        print("[sim] recordings finalized", flush=True)
+    node.destroy_node()
+    rclpy.shutdown()
+
 app.close()
 print("[sim] closed")

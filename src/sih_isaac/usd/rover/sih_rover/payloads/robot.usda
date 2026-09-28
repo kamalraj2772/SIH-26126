@@ -1,0 +1,153 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.1.3"
+    }
+    defaultPrim = "sih_rover"
+    doc = """Generated from Composed Stage of root layer /tmp/tmprbln6j7e/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_z2ejl_80/usdex_sih_rover/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_z2ejl_80/temp_sih_rover/sih_rover.usd
+"""
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+over "sih_rover" (
+    prepend apiSchemas = ["IsaacRobotAPI"]
+)
+{
+    prepend rel isaac:physics:robotJoints = [
+        </sih_rover/Physics/wheel_fl_joint>,
+        </sih_rover/Physics/wheel_fr_joint>,
+        </sih_rover/Physics/wheel_rl_joint>,
+        </sih_rover/Physics/wheel_rr_joint>,
+        </sih_rover/Physics/imu_joint>,
+        </sih_rover/Physics/camera_joint>,
+        </sih_rover/Physics/base_link_gt_joint>,
+        </sih_rover/Physics/camera_optical_joint>,
+    ]
+    prepend rel isaac:physics:robotLinks = [
+        </sih_rover/Geometry/base_link>,
+        </sih_rover/Geometry/base_link/wheel_fl_link>,
+        </sih_rover/Geometry/base_link/wheel_fr_link>,
+        </sih_rover/Geometry/base_link/wheel_rl_link>,
+        </sih_rover/Geometry/base_link/wheel_rr_link>,
+        </sih_rover/Geometry/base_link/imu_link>,
+        </sih_rover/Geometry/base_link/camera_link>,
+        </sih_rover/Geometry/base_link/camera_link/camera_optical_frame>,
+        </sih_rover/Geometry/base_link/base_link_gt>,
+    ]
+    token isaac:robotType = "Default"
+
+    over "Geometry"
+    {
+        over "base_link" (
+            prepend apiSchemas = ["IsaacLinkAPI"]
+        )
+        {
+            over "wheel_fl_link" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+            }
+
+            over "wheel_fr_link" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+            }
+
+            over "wheel_rl_link" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+            }
+
+            over "wheel_rr_link" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+            }
+
+            over "camera_link" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+                over "camera_optical_frame" (
+                    prepend apiSchemas = ["IsaacLinkAPI"]
+                )
+                {
+                }
+            }
+
+            over "imu_link" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+            }
+
+            over "base_link_gt" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        over "wheel_fl_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "wheel_fr_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "wheel_rl_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "wheel_rr_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "imu_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "camera_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "camera_optical_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+
+        over "base_link_gt_joint" (
+            prepend apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+        }
+    }
+}
+

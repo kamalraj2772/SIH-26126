@@ -1,0 +1,264 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.1.3"
+    }
+    defaultPrim = "sih_rover"
+    doc = """Generated from Composed Stage of root layer /tmp/tmppfgmfa66/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_9rk_objp/usdex_sih_rover/sih_rover.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_sih_rover_9rk_objp/temp_sih_rover/sih_rover.usd
+
+
+Generated from Composed Stage of root layer /home/qbotix-rover/sih_ws/src/sih_isaac/usd/rover/sih_rover_3/payloads/base.usd
+"""
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+over "sih_rover"
+{
+    over "Geometry"
+    {
+        over "base_link" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsArticulationRootAPI", "NewtonArticulationRootAPI", "PhysicsMassAPI"]
+        )
+        {
+            bool newton:selfCollisionEnabled = 0
+            point3f physics:centerOfMass = (0, 0, 0)
+            float3 physics:diagonalInertia = (1.5625, 2.7625, 3.7)
+            float physics:mass = 60
+            quatf physics:principalAxes = (1, 0, 0, 0)
+
+            over "wheel_fl_link" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (0.018475, 0.018475, 0.03375)
+                float physics:mass = 3
+                quatf physics:principalAxes = (1, 0, 0, 0)
+
+                over "cylinder_1" (
+                    prepend apiSchemas = ["NewtonCollisionAPI"]
+                )
+                {
+                }
+            }
+
+            over "wheel_fr_link" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (0.018475, 0.018475, 0.03375)
+                float physics:mass = 3
+                quatf physics:principalAxes = (1, 0, 0, 0)
+
+                over "cylinder_1" (
+                    prepend apiSchemas = ["NewtonCollisionAPI"]
+                )
+                {
+                }
+            }
+
+            over "wheel_rl_link" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (0.018475, 0.018475, 0.03375)
+                float physics:mass = 3
+                quatf physics:principalAxes = (1, 0, 0, 0)
+
+                over "cylinder_1" (
+                    prepend apiSchemas = ["NewtonCollisionAPI"]
+                )
+                {
+                }
+            }
+
+            over "wheel_rr_link" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (0.018475, 0.018475, 0.03375)
+                float physics:mass = 3
+                quatf physics:principalAxes = (1, 0, 0, 0)
+
+                over "cylinder_1" (
+                    prepend apiSchemas = ["NewtonCollisionAPI"]
+                )
+                {
+                }
+            }
+
+            over "camera_link" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                float3 physics:diagonalInertia = (0.000001, 0.000001, 0.000001)
+                float physics:mass = 0.15
+                quatf physics:principalAxes = (1, 0, 0, 0)
+
+                over "camera_optical_frame" (
+                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                )
+                {
+                    float3 physics:diagonalInertia = (1e-9, 1e-9, 1e-9)
+                    float physics:mass = 0.001
+                    quatf physics:principalAxes = (1, 0, 0, 0)
+                }
+            }
+
+            over "box_1" (
+                prepend apiSchemas = ["NewtonCollisionAPI"]
+            )
+            {
+            }
+
+            over "imu_link" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                float3 physics:diagonalInertia = (0.000001, 0.000001, 0.000001)
+                float physics:mass = 0.05
+                quatf physics:principalAxes = (1, 0, 0, 0)
+            }
+
+            over "base_link_gt" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                float3 physics:diagonalInertia = (1e-9, 1e-9, 1e-9)
+                float physics:mass = 0.001
+                quatf physics:principalAxes = (1, 0, 0, 0)
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        def PhysicsRevoluteJoint "wheel_fl_joint" (
+            prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:stiffness = 0
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/wheel_fl_link>
+            point3f physics:localPos0 = (0.4, 0.35, -0.105)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsRevoluteJoint "wheel_fr_joint" (
+            prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:stiffness = 0
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/wheel_fr_link>
+            point3f physics:localPos0 = (0.4, -0.35, -0.105)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsRevoluteJoint "wheel_rl_joint" (
+            prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:stiffness = 0
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/wheel_rl_link>
+            point3f physics:localPos0 = (-0.4, 0.35, -0.105)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsRevoluteJoint "wheel_rr_joint" (
+            prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:stiffness = 0
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/wheel_rr_link>
+            point3f physics:localPos0 = (-0.4, -0.35, -0.105)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsFixedJoint "imu_joint"
+        {
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/imu_link>
+            point3f physics:localPos0 = (0, 0, 0.105)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsFixedJoint "camera_joint"
+        {
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/camera_link>
+            point3f physics:localPos0 = (0.37, 0, 0.125)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsFixedJoint "camera_optical_joint"
+        {
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link/camera_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/camera_link/camera_optical_frame>
+            point3f physics:localPos0 = (0, 0, 0)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.5, -0.5, 0.5, -0.5)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsFixedJoint "base_link_gt_joint"
+        {
+            custom rel physics:body0
+            prepend rel physics:body0 = </sih_rover/Geometry/base_link>
+            custom rel physics:body1
+            prepend rel physics:body1 = </sih_rover/Geometry/base_link/base_link_gt>
+            point3f physics:localPos0 = (0, 0, 0)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+    }
+}
+

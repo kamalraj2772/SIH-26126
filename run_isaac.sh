@@ -17,5 +17,7 @@ if [ ! -f src/sih_isaac/usd/sih26126_world.usd ]; then
   (cd /isaacsim && ./python.sh "$OLDPWD/src/sih_isaac/scripts/build_scene.py")
 fi
 
+set +u
 source /opt/ros/jazzy/setup.bash
+set -u
 cd /isaacsim && exec ./python.sh "$OLDPWD/src/sih_isaac/scripts/run_sim.py" "$@"
