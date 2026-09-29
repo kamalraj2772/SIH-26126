@@ -40,6 +40,9 @@ p.add_argument("--ffmpeg", default="ffmpeg", help="ffmpeg binary for --record")
 p.add_argument("--rec-size", default="1920x1080", metavar="WxH",
                help="recording resolution (default 1080p)")
 p.add_argument("--rec-fps", type=int, default=15, help="recording frame rate")
+p.add_argument("--no-onboard", action="store_true",
+               help="skip isaac_onboard.mp4 (one fewer 1080p render product, "
+                    "for when the sim is frame-rate bound)")
 args = p.parse_args()
 
 from isaacsim import SimulationApp
@@ -196,21 +199,35 @@ if args.record:
     import subprocess
     rec_dir = pathlib.Path(args.record)
     rec_dir.mkdir(parents=True, exist_ok=True)
-    for cam_name, label in (("chase_cam", "behind"), ("side_cam", "side"),
-                            ("top_cam", "top")):
-        rp = rep.create.render_product(f"/World/{cam_name}",
-                                       resolution=(REC_W, REC_H))
+    # The three follow cameras plus the rover's own ZED: the onboard view is
+    # what an operator would actually see on the video link, so it is recorded
+    # at full resolution here rather than upscaled from the 640x360 ROS topic.
+    rec_cams = [(f"/World/{n}", lab) for n, lab in
+                (("chase_cam", "behind"), ("side_cam", "side"),
+                 ("top_cam", "top"))]
+    if not args.no_onboard:
+        rec_cams.append((CAM, "onboard"))
+    for cam_path, label in rec_cams:
+        rp = rep.create.render_product(cam_path, resolution=(REC_W, REC_H))
         ann = rep.AnnotatorRegistry.get_annotator("rgb")
         ann.attach(rp)
+        # Two defences against losing a whole mission's video (report_1401
+        # did): the encoder runs in its own session, so a Ctrl-C in this
+        # terminal never reaches it -- it only stops at EOF, when this process
+        # closes the pipe or dies -- and the mp4 is fragmented, so even a
+        # killed encoder leaves a playable file. (This ffmpeg aborts the
+        # moov write once it has received two signals.)
         proc = subprocess.Popen(
             [args.ffmpeg, "-y", "-loglevel", "error", "-f", "rawvideo",
              "-pix_fmt", "rgba", "-s", f"{REC_W}x{REC_H}", "-r", str(REC_FPS),
              "-i", "-", "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
-             "-pix_fmt", "yuv420p", str(rec_dir / f"isaac_{label}.mp4")],
-            stdin=subprocess.PIPE)
+             "-pix_fmt", "yuv420p", "-g", str(2 * REC_FPS),
+             "-movflags", "+frag_keyframe+empty_moov",
+             str(rec_dir / f"isaac_{label}.mp4")],
+            stdin=subprocess.PIPE, start_new_session=True)
         recorders.append((ann, proc))
-    print(f"[sim] recording behind/side/top views at {REC_W}x{REC_H} "
-          f"@{REC_FPS}fps -> {rec_dir}", flush=True)
+    print(f"[sim] recording {'/'.join(l for _, l in rec_cams)} views at "
+          f"{REC_W}x{REC_H} @{REC_FPS}fps -> {rec_dir}", flush=True)
 
 
 def record_frames():

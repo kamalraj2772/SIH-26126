@@ -8,5 +8,10 @@ install(DIRECTORY generated DESTINATION lib)
 install(PROGRAMS
   sih_isaac/utm_goal.py
   DESTINATION lib/${PROJECT_NAME})
+# imported by the installed utm_goal.py (it adds its own directory to sys.path)
+install(FILES
+  sih_isaac/geodesy.py
+  sih_isaac/mission_run.py
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

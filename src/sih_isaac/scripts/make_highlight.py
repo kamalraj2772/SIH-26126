@@ -1,202 +1,239 @@
-"""Cut a short 1080p highlight reel from a recorded mission run.
+"""Cut the final highlight reel (at most 2 minutes) from a recorded mission.
 
     .demoenv/bin/python src/sih_isaac/scripts/make_highlight.py <run_dir> \
-        [--ffmpeg PATH] [--out FILE]
+        [--ffmpeg PATH] [--out FILE] [--max-seconds 120]
 
-Segment boundaries are derived from the run's own telemetry (first motion,
-berm/tunnel crossing, arrival), so the cuts land on real mission events rather
-than fixed timestamps. Output: 1920x1080, 30 fps, ~90 s, silent.
+Pure picture -- no title cards, captions or labels -- 1920x1080 at 30 fps,
+silent, in mission order:
+
+    the input      GeoTIFF, slope, UTM <-> map and goal, from geo_pipeline.mp4
+    the drive      chase camera at the start, the rover's own camera, a 2x2
+                   camera grid over the traverse and, when the route crosses
+                   the berm, the berm and the tunnel from the rover's camera
+    the stack      RViz, then the costmap, EKF and SLAM/graph videos
+    arrival        the camera grid on the final approach
+
+Cuts land on real mission events (first motion, berm entry and exit, arrival)
+read from mission_log.csv. Every source is optional: a missing video drops
+its shot. The total is budgeted and enforced -- never more than --max-seconds.
+Camera and RViz shots come from raw/ when a run still has one (runs captioned
+by an earlier version of this pipeline).
 """
 import argparse
+import concurrent.futures as cf
 import json
 import pathlib
+import shutil
 import subprocess
+import sys
 import tempfile
 
-import numpy as np
-from PIL import Image, ImageDraw, ImageFont
-
-WS = pathlib.Path("/home/qbotix-rover/sih_ws")
-FONT_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-FONT_R = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-NAVY = (16, 38, 62)
-WHITE = (255, 255, 255)
-SKY = (120, 176, 230)
-GOLD = (232, 176, 96)
-GREENC = (140, 200, 150)
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "sih_isaac"))
+import video                                                    # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument("run_dir")
-ap.add_argument("--ffmpeg", default="ffmpeg")
+ap.add_argument("--ffmpeg", default=None)
 ap.add_argument("--out", default=None)
+ap.add_argument("--max-seconds", type=float, default=120.0)
 args = ap.parse_args()
+
 RUN = pathlib.Path(args.run_dir).resolve()
 OUT = pathlib.Path(args.out) if args.out else RUN / "QSLAM_highlight.mp4"
-FF = args.ffmpeg
-W, H, FPS = 1920, 1080, 30
-
-VIEWS = {k: RUN / f"isaac_{k}.mp4" for k in ("behind", "side", "top")}
-VIEWS["rviz"] = RUN / "rviz.mp4"
-for k, v in VIEWS.items():
-    if not v.exists():
-        raise SystemExit(f"missing {v}")
-
-# ----------------------------------------------------- timings from telemetry
-rows = [[float(x) for x in l.split(",")]
-        for l in (RUN / "mission_log.csv").read_text().splitlines()[1:]
-        if len(l.split(",")) == 8]
-d = np.array(rows)
-t, gx, gy, cv = d[:, 0], d[:, 1], d[:, 2], d[:, 6]
-t_move = float(t[np.abs(cv) > 0.05][0])
-berm = json.loads((WS / "src/sih_isaac/generated/world.json").read_text())["berm"]
-ent = np.where(gx >= berm["x0"])[0]
-ext = np.where(gx >= berm["x1"])[0]
-t_tun_in = float(t[ent[0]]) if len(ent) else t_move + 300
-t_tun_out = float(t[ext[0]]) if len(ext) else t_tun_in + 200
-t_end = float(t[-1])
-
-dist0 = float(np.hypot(gx[0] - 56.0, gy[0] - 34.0))
-path_len = float(np.sum(np.hypot(np.diff(gx), np.diff(gy))))
-loc_err = float(np.hypot(gx[-1] - d[-1, 4], gy[-1] - d[-1, 5]))
-print(f"[reel] move {t_move:.0f}s  tunnel {t_tun_in:.0f}-{t_tun_out:.0f}s  "
-      f"end {t_end:.0f}s")
-
-tmp = pathlib.Path(tempfile.mkdtemp(prefix="reel_"))
+FF = args.ffmpeg or video.ffmpeg_bin()
+W, H, FPS = video.VIDEO_W, video.VIDEO_H, 30
+LIMIT = args.max_seconds
+TMP = pathlib.Path(tempfile.mkdtemp(prefix="reel_"))
 
 
-# ------------------------------------------------------------------- cards --
-def card(path, lines, bg=NAVY):
-    img = Image.new("RGB", (W, H), bg)
-    dr = ImageDraw.Draw(img)
-    total = sum(sz + gap for _, sz, _, gap in lines)
-    y = (H - total) // 2
-    for text, size, col, gap in lines:
-        f = ImageFont.truetype(FONT_B if size >= 54 else FONT_R, size)
-        w = dr.textbbox((0, 0), text, font=f)[2]
-        dr.text(((W - w) // 2, y), text, font=f, fill=col)
-        y += size + gap
-    img.save(path)
-    return path
+def src(name):
+    raw = RUN / "raw" / name
+    return raw if raw.exists() else RUN / name
 
 
-title = card(tmp / "title.png", [
-    ("QSLAM", 132, WHITE, 26),
-    ("GPS-denied autonomous ground navigation", 54, SKY, 54),
-    ("Isaac Sim integration testbed  ·  navigation backbone", 38,
-     (170, 190, 210), 16),
-    ("SIH 2026  ·  PS SIH26126  ·  Team QSLAM (ID 14)", 34,
-     (150, 170, 195), 0),
-])
-endc = card(tmp / "end.png", [
-    ("MISSION SUCCESSFUL", 92, GREENC, 40),
-    (f"{path_len:.0f} m driven   ·   {loc_err:.2f} m localization drift",
-     58, WHITE, 22),
-    ("no GNSS receiver used at any point", 44, GOLD, 52),
-    ("Isaac Sim 6  ·  ROS 2 Jazzy  ·  Nav2 (Smac A* + MPPI)  "
-     "·  EKF", 34, (170, 190, 210), 0),
-])
+SRC = {k: src(f"isaac_{k}.mp4") for k in ("behind", "side", "top", "onboard")}
+SRC["rviz"] = src("rviz.mp4")
+for k in ("costmap", "ekf", "slam_graph", "geo_pipeline"):
+    SRC[k] = RUN / f"{k}.mp4"
+HAVE = {k: v.exists() and video.probe(v)["seconds"] > 1.0
+        for k, v in SRC.items()}
+LEN = {k: video.probe(v)["seconds"] if HAVE[k] else 0.0
+       for k, v in SRC.items()}
+print("[reel] sources: " + ", ".join(
+    f"{k} {LEN[k]:.0f}s" if HAVE[k] else f"{k} -" for k in SRC), flush=True)
+
+M = video.marks(RUN)
+if M["empty"]:
+    raise SystemExit("[reel] mission_log.csv is empty; nothing to cut")
+TUNNEL = M["tunnel_in"] is not None and M["tunnel_out"] is not None
+to_rviz = video.rviz_mapper(RUN)
+viz0 = video.viz_offset(RUN)
+print(f"[reel] move {M['move']:.0f}s  tunnel "
+      f"{M['tunnel_in'] or 0:.0f}-{M['tunnel_out'] or 0:.0f}s  "
+      f"end {M['end']:.0f}s", flush=True)
 
 
-PANEL_ORIGINS = [(0, 0), (W // 2, 0), (0, H // 2), (W // 2, H // 2)]
+def file_time(key, t_sim):
+    """Mission (sim) time -> seconds into that source file."""
+    if key == "rviz":
+        return to_rviz(t_sim)
+    if key in ("costmap", "ekf", "slam_graph"):
+        return t_sim - viz0
+    return t_sim
 
 
-def overlay_png(name, caption, panels=None):
-    """Caption bar (+ optional quadrant labels) as one RGBA layer.
-
-    This build of ffmpeg has no drawtext filter (FFmpeg 7 needs harfbuzz),
-    so text is rendered here and composited with the overlay filter.
-    """
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    dr = ImageDraw.Draw(img)
-
-    def label(xy, text, size, pad, anchor_centre=False):
-        f = ImageFont.truetype(FONT_B, size)
-        l, t_, r, b = dr.textbbox((0, 0), text, font=f)
-        tw, th = r - l, b - t_
-        x, y = xy
-        if anchor_centre:
-            x -= tw // 2
-        dr.rounded_rectangle([x - pad, y - pad, x + tw + pad, y + th + pad * 2],
-                             radius=10, fill=(13, 31, 51, 196))
-        dr.text((x - l, y - t_ + pad // 2), text, font=f, fill=WHITE)
-
-    if panels:
-        for (ox, oy), text in zip(PANEL_ORIGINS, panels):
-            label((ox + 26, oy + 22), text, 28, 11)
-    label((W // 2, H - 152), caption, 46, 20, anchor_centre=True)
-    p = tmp / f"{name}_ovl.png"
-    img.save(p)
-    return p
+# ------------------------------------------------------------- the plan ---
+PLAN = []
 
 
+def shot(key, t0, t1, dur, sim=True):
+    """One source over [t0, t1] (mission time, or file time when sim=False)."""
+    if not HAVE[key]:
+        return False
+    a = file_time(key, t0) if sim else t0
+    b = file_time(key, t1) if sim else t1
+    a, b = max(a, 0.0), min(b, LEN[key] - 0.2)
+    if b - a < 1.0:
+        return False
+    PLAN.append(dict(kind="shot", key=key, a=a, b=b, dur=dur))
+    return True
+
+
+def grid(keys, t0, t1, dur):
+    """2x2 camera grid; with fewer than three views, one shot instead."""
+    keys = [k for k in keys if HAVE[k]]
+    if len(keys) < 3:
+        return bool(keys) and shot(keys[0], t0, t1, dur)
+    b = min([t1] + [LEN[k] - 0.2 for k in keys if k != "rviz"])
+    if b - t0 < 1.0:
+        return False
+    PLAN.append(dict(kind="grid", keys=keys, a=max(t0, 0.0), b=b, dur=dur))
+    return True
+
+
+GRID4 = ["behind", "side", "top", "onboard" if HAVE["onboard"] else "rviz"]
+t_mv, t_end = M["move"], M["end"]
+
+# the input
+geo_ch = {}
+gj = RUN / "geo_chapters.json"
+if gj.exists():
+    geo_ch = {c.get("key"): c for c in json.loads(gj.read_text())}
+used = False
+for key, dur in (("geotiff", 4.0), ("slope", 5.0), ("utm_map", 4.0),
+                 ("goal", 6.0)):
+    c = geo_ch.get(key)
+    if c:
+        used |= shot("geo_pipeline", c["t0"] + 0.2, c["t1"] - 0.1, dur,
+                     sim=False)
+if not used and HAVE["geo_pipeline"]:
+    shot("geo_pipeline", 0.0, LEN["geo_pipeline"], 18.0, sim=False)
+
+# the drive
+shot("behind", t_mv - 1.0, t_mv + 19.0, 8.0)
+shot("onboard", t_mv + 19.0, t_mv + 45.0, 8.0)
+trav_end = (M["tunnel_in"] - 14.0) if TUNNEL else (t_end - 50.0)
+grid(GRID4, t_mv + 45.0, trav_end, 16.0 if TUNNEL else 26.0)
+if TUNNEL:
+    shot("side", M["tunnel_in"] - 14.0, M["tunnel_in"] + 16.0, 6.0)
+    shot("onboard", M["tunnel_in"], M["tunnel_out"] + 4.0, 8.0)
+
+# the stack -- an RViz window with the screen actually lit: the grab goes
+# black while the desktop is locked or the display sleeps
+mid0 = None
+if HAVE["rviz"]:
+    for frac in (0.25, 0.4, 0.55, 0.1, 0.7, 0.85):
+        c = t_mv + frac * (t_end - t_mv)
+        probes = [video.brightness(SRC["rviz"], to_rviz(c + d))
+                  for d in (2.0, 15.0, 28.0, 38.0)]
+        if min(probes) > 20.0:
+            mid0 = c
+            break
+    if mid0 is None:
+        print("[reel] RViz capture is blank throughout the mission "
+              "(screen locked or asleep?) -- leaving it out", flush=True)
+if mid0 is not None:
+    shot("rviz", mid0, mid0 + 40.0, 9.0)
+span = (t_mv - 5.0, t_end + 3.0)
+shot("costmap", *span, 11.0)
+shot("ekf", *span, 10.0)
+shot("slam_graph", *span, 9.0)
+
+# arrival
+grid(GRID4, t_end - 45.0, t_end + 2.0, 9.0)
+
+# ------------------------------------------------------------ the budget ---
+total = sum(s["dur"] for s in PLAN)
+budget = LIMIT - 1.0                              # headroom for rounding
+if total > budget:
+    k = budget / total
+    for s in PLAN:
+        s["dur"] *= k
+    print(f"[reel] trimmed shots by {100 * (1 - k):.0f}% to stay under "
+          f"{LIMIT:.0f}s", flush=True)
+print(f"[reel] {len(PLAN)} shots, {sum(s['dur'] for s in PLAN):.1f}s planned "
+      f"(limit {LIMIT:.0f}s)", flush=True)
+
+# ---------------------------------------------------------------- render ---
 ENC = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
        "-pix_fmt", "yuv420p", "-r", str(FPS), "-an"]
-segs = []
 
 
-def run(cmd, out):
+def ffrun(cmd, out):
     r = subprocess.run(cmd + ENC + [str(out)], stdout=subprocess.DEVNULL,
                        stderr=subprocess.PIPE, text=True)
     if r.returncode:
-        raise SystemExit(f"ffmpeg failed for {out.name}:\n{r.stderr[-1500:]}")
-    segs.append(out)
+        raise RuntimeError(f"ffmpeg failed for {out.name}:\n{r.stderr[-1500:]}")
+    return out
 
 
-def still(png, dur, out):
-    run([FF, "-y", "-loglevel", "error", "-loop", "1", "-t", str(dur),
-         "-i", str(png), "-vf", f"scale={W}:{H},fps={FPS},format=yuv420p"], out)
+def render(i, s):
+    out = TMP / f"s{i:02d}.mp4"
+    base = [FF, "-y", "-nostdin", "-loglevel", "error"]
+    tail = f"trim=duration={s['dur']:.3f},setpts=PTS-STARTPTS"
+    if s["kind"] == "shot":
+        sp = max((s["b"] - s["a"]) / s["dur"], 0.25)
+        return ffrun(base + [
+            "-ss", f"{s['a']:.3f}", "-t", f"{s['b'] - s['a']:.3f}",
+            "-i", str(SRC[s["key"]]), "-vf",
+            f"setpts=(PTS-STARTPTS)/{sp:.5f},scale={W}:{H}:flags=lanczos,"
+            f"fps={FPS},{tail},format=yuv420p"], out)
+    # grid: each input gets its own window and speed -- RViz is wall-clock,
+    # so the same mission span covers a different length of its file
+    keys, cmd, parts = s["keys"], list(base), []
+    for j, k in enumerate(keys):
+        ka, kb = file_time(k, s["a"]), min(file_time(k, s["b"]), LEN[k] - 0.2)
+        sp = max((kb - ka) / s["dur"], 0.25)
+        cmd += ["-ss", f"{ka:.3f}", "-t", f"{kb - ka:.3f}", "-i", str(SRC[k])]
+        parts.append(f"[{j}:v]setpts=(PTS-STARTPTS)/{sp:.5f},"
+                     f"scale={W // 2}:{H // 2},fps={FPS}[v{j}]")
+    n = len(keys)                     # 3 or 4: the bounding box is W x H
+    layout = "|".join(["0_0", "w0_0", "0_h0", "w0_h0"][:n])
+    parts.append("".join(f"[v{j}]" for j in range(n))
+                 + f"xstack=inputs={n}:layout={layout}:fill=#0C1D31,"
+                 f"{tail},format=yuv420p[out]")
+    return ffrun(cmd + ["-filter_complex", ";".join(parts),
+                        "-map", "[out]"], out)
 
 
-def single(view, a, b, speed, caption, out):
-    dur = max(b - a, 0.5)
-    ovl = overlay_png(out.stem, caption)
-    run([FF, "-y", "-loglevel", "error", "-ss", f"{a:.2f}", "-t", f"{dur:.2f}",
-         "-i", str(VIEWS[view]), "-loop", "1", "-i", str(ovl),
-         "-filter_complex",
-         f"[0:v]setpts=PTS/{speed},scale={W}:{H},fps={FPS}[b];"
-         f"[b][1:v]overlay=0:0:shortest=1,format=yuv420p[out]",
-         "-map", "[out]"], out)
+with cf.ThreadPoolExecutor(max_workers=6) as pool:
+    futs = [pool.submit(render, i, s) for i, s in enumerate(PLAN)]
+    segs = []
+    for i, f in enumerate(futs):
+        try:
+            segs.append(f.result())
+        except Exception as exc:                  # drop the shot, keep the reel
+            print(f"[reel] shot {i} ({PLAN[i]['kind']} "
+                  f"{PLAN[i].get('key', '')}) dropped: {exc}", flush=True)
 
-
-def quad(a, b, speed, caption, out):
-    dur = max(b - a, 0.5)
-    order = [("behind", "behind the rover"), ("side", "side angle"),
-             ("top", "top-down"),
-             ("rviz", "RViz — what the rover believes")]
-    ovl = overlay_png(out.stem, caption, panels=[lab for _, lab in order])
-    cmd = [FF, "-y", "-loglevel", "error"]
-    for key, _ in order:
-        cmd += ["-ss", f"{a:.2f}", "-t", f"{dur:.2f}", "-i", str(VIEWS[key])]
-    cmd += ["-loop", "1", "-i", str(ovl)]
-    parts = [f"[{i}:v]setpts=PTS/{speed},scale={W//2}:{H//2}[v{i}]"
-             for i in range(4)]
-    parts.append("[v0][v1][v2][v3]xstack=inputs=4:"
-                 "layout=0_0|w0_0|0_h0|w0_h0[g]")
-    parts.append(f"[g]fps={FPS}[gg];"
-                 f"[gg][4:v]overlay=0:0:shortest=1,format=yuv420p[out]")
-    cmd += ["-filter_complex", ";".join(parts), "-map", "[out]"]
-    run(cmd, out)
-
-
-still(title, 3.5, tmp / "s0.mp4")
-single("behind", t_move + 1, t_move + 21, 2.0,
-       "Mission start — one UTM grid coordinate is the only input",
-       tmp / "s1.mp4")
-quad(t_move + 26, t_tun_in - 8, 30.0,
-     "Open traverse — planned route, live lidar avoidance, GPS-free pose",
-     tmp / "s2.mp4")
-single("side", t_tun_in - 18, t_tun_in + 52, 5.0,
-       "Reaching the berm — the short way through is the tunnel",
-       tmp / "s3.mp4")
-single("behind", t_tun_in + 52, t_tun_out, 20.0,
-       "Through the tunnel — no satellite signal, lidar and inertial only",
-       tmp / "s4.mp4")
-quad(t_end - 72, t_end, 4.0,
-     "Final approach — goal reached", tmp / "s5.mp4")
-still(endc, 5.0, tmp / "s6.mp4")
-
-lst = tmp / "list.txt"
+lst = TMP / "list.txt"
 lst.write_text("".join(f"file '{p}'\n" for p in segs))
-subprocess.run([FF, "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
-                "-i", str(lst), "-c", "copy", str(OUT)], check=True)
-print(f"wrote {OUT}")
+subprocess.run([FF, "-y", "-nostdin", "-loglevel", "error", "-f", "concat",
+                "-safe", "0", "-i", str(lst), "-c", "copy",
+                "-movflags", "+faststart", str(OUT)], check=True)
+video._PROBE.pop(str(OUT), None)
+got = video.probe(OUT)["seconds"]
+shutil.rmtree(TMP, ignore_errors=True)
+print(f"[reel] wrote {OUT}  ({got:.1f}s, limit {LIMIT:.0f}s)", flush=True)
+if got > LIMIT + 0.5:
+    raise SystemExit(f"[reel] ERROR: reel is {got:.1f}s, over the {LIMIT:.0f}s cap")

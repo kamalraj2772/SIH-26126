@@ -1,0 +1,468 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1790679254.964111  155643 descriptor_database.cc:633] File already exists in database: grpc/health/v1/health.proto
+W0000 00:00:1790679254.964133  155643 message.cc:301] Protobuf GeneratedMessageFactory: File is already registered: grpc/health/v1/health.proto
+2026-09-29T10:54:10Z [Info] [carb] Logging to file: /isaacsim/kit/logs/Kit/Isaac-Sim Python/6.0/kit_20260929_162410.log
+[3.295s] [ext: omni.assets.plugins-0.0.0] startup
+[3.348s] [ext: omni.blobkey-1.1.2] startup
+[3.355s] [ext: omni.kit.async_engine-0.0.3] startup
+[4.454s] [ext: omni.client.lib-1.1.1] startup
+[4.600s] [ext: omni.client-1.3.0] startup
+[4.816s] [ext: omni.protobuf.lib-1.0.0] startup
+[4.880s] [ext: omni.grpc.lib-1.0.0] startup
+[5.072s] [ext: omni.metrics.core-0.0.3] startup
+[5.072s] [ext: omni.datastore-0.0.0] startup
+[5.091s] [ext: omni.gpu_foundation.shadercache.vulkan-1.0.0] startup
+[5.104s] [ext: omni.hsscclient-1.1.4] startup
+[5.123s] [ext: omni.stats-1.0.1] startup
+[5.134s] [ext: omni.ujitso.default-1.0.0] startup
+[5.337s] [ext: omni.gpu_foundation-0.0.0] startup
+[5.788s] [ext: carb.windowing.plugins-1.0.1] startup
+[5.818s] [ext: omni.kit.renderer.init-1.0.1] startup
+2026-09-29T10:54:16Z [6,716ms] [Warning] [omni.rtx] Skipping unsupported non-NVIDIA GPU: Intel(R) Graphics (RPL-S)
+2026-09-29T10:54:16Z [6,716ms] [Warning] [omni.rtx] Skipping unsupported non-NVIDIA GPU: Intel(R) Graphics (RPL-S)
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 595.91.07     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 4090          | Yes: 0 |     | 23274   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2684      | 91545e0b.. |
+|     |                                  |        |     |            | 1         |            |
+|---------------------------------------------------------------------------------------------|
+| 1   | Intel(R) Graphics (RPL-S)        |        |     | 23880   MB | 8086      | 0          |
+|     |                                  |        |     |            | a780      | 868080a7.. |
+|     |                                  |        |     |            | 0         |            |
+|=============================================================================================|
+| OS: 24.04.5 LTS (Noble Numbat) ubuntu, Version: 24.04.5, Kernel: 7.0.0-31-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101011 (1.21.1.11)
+| Processor: 13th Gen Intel(R) Core(TM) i9-13900K
+| Bare Metal Cores: 24 | Bare Metal Logical Cores: 48
+| Available Cores:  32 
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 31840 | Free Memory: 17885
+| Total Page/Swap (MB): 8191 | Free Page/Swap: 6039
+|---------------------------------------------------------------------------------------------|
+2026-09-29T10:54:16Z [6,930ms] [Warning] [omni.rtx] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+2026-09-29T10:54:16Z [6,937ms] [Warning] [omni.rtx] ECC is enabled on physical device 0
+[7.200s] [ext: omni.kit.pipapi-0.0.0] startup
+[7.218s] [ext: omni.kit.pip_archive-0.0.0] startup
+[7.219s] [ext: isaacsim.pip.newton-0.6.1] startup
+[7.223s] [ext: omni.pip.compute-1.9.2] startup
+[7.223s] [ext: omni.isaac.core_archive-5.3.1] startup
+[7.224s] [ext: omni.kit.telemetry-0.5.2] startup
+[7.427s] [ext: omni.kit.loop-isaac-1.6.0] startup
+[7.449s] [ext: omni.kit.test-2.0.7] startup
+[8.465s] [ext: omni.materialx.libs-1.0.9] startup
+[8.545s] [ext: omni.gpucompute.plugins-0.0.0] startup
+[8.610s] [ext: omni.usd.config-1.0.7] startup
+[9.175s] [ext: omni.usd.libs-1.0.3] startup
+[11.589s] [ext: omni.iray.libs-0.0.1] startup
+[11.881s] [ext: omni.mdl-57.0.3] startup
+[12.351s] [ext: omni.mdl.neuraylib-0.2.20] startup
+[12.389s] [ext: omni.kit.usd.mdl-1.1.9] startup
+[12.910s] [ext: omni.appwindow-1.2.2] startup
+[12.958s] [ext: omni.kit.renderer.core-1.2.2] startup
+[13.037s] [ext: omni.kit.renderer.capture-2.0.1] startup
+[13.069s] [ext: omni.kit.renderer.imgui-2.0.6] startup
+[13.207s] [ext: omni.ui-3.2.0] startup
+[13.247s] [ext: omni.kit.mainwindow-1.0.3] startup
+[13.248s] [ext: carb.audio-0.1.0] startup
+[13.278s] [ext: omni.uiaudio-1.0.0] startup
+[13.311s] [ext: omni.kit.uiapp-0.0.0] startup
+[13.311s] [ext: omni.usd.schema.metrics.assembler-110.1.0] startup
+[13.331s] [ext: omni.usd.schema.audio-0.0.1] startup
+[13.371s] [ext: omni.usd_resolver-1.0.0] startup
+[13.436s] [ext: omni.usd.core-1.8.3] startup
+[13.463s] [ext: omni.metropolis.schema-0.0.3] startup
+[13.464s] [ext: isaacsim.anim.robot.schema-0.1.1] startup
+[13.464s] [ext: omni.usd.schema.anim-0.0.1] startup
+[13.571s] [ext: omni.usd.schema.geospatial-0.0.1] startup
+[13.591s] [ext: omni.usd.schema.omnigraph-1.0.1] startup
+[13.625s] [ext: omni.usd.schema.semantics-0.0.0] startup
+[13.647s] [ext: omni.activity.core-1.0.3] startup
+[13.676s] [ext: omni.cubric-0.1.0] startup
+[13.737s] [ext: omni.graph.exec-0.9.6] startup
+[13.768s] [ext: omni.hydra.scene_delegate-0.3.5] startup
+[13.825s] [ext: usdrt.scenegraph-7.6.3] startup
+[14.039s] [ext: omni.hydra.usdrt_delegate-7.5.2] startup
+[14.143s] [ext: omni.inspect-1.0.2] startup
+[14.158s] [ext: omni.kit.actions.core-1.0.0] startup
+[14.220s] [ext: omni.kit.audiodeviceenum-1.0.2] startup
+[14.232s] [ext: omni.kit.commands-1.5.0] startup
+[14.264s] [ext: omni.kit.exec.core-0.13.5] startup
+[14.282s] [ext: omni.kit.usd_undo-0.1.8] startup
+[14.283s] [ext: omni.kit.window.popup_dialog-2.0.25] startup
+[14.298s] [ext: omni.kit.widget.nucleus_connector-2.3.1] startup
+[14.321s] [ext: omni.timeline-1.1.0] startup
+[14.353s] [ext: omni.usd-1.16.0] startup
+[14.524s] [ext: omni.graph.core-3.1.2] startup
+[14.550s] [ext: omni.kit.notification_manager-1.0.11] startup
+[14.564s] [ext: isaacsim.core.deprecation_manager-0.4.2] startup
+[14.573s] [ext: isaacsim.replicator.agent.schema-0.1.1] startup
+[14.588s] [ext: isaacsim.robot.schema-6.3.7] startup
+[14.642s] [ext: isaacsim.robot_motion.schema-0.2.1] startup
+[14.659s] [ext: omni.anim.behavior.schema-110.1.0] startup
+[14.685s] [ext: omni.anim.graph.schema-110.1.1] startup
+[14.733s] [ext: omni.anim.navigation.schema-110.1.0] startup
+[14.755s] [ext: omni.behavior.tree.schema-110.1.0] startup
+[14.764s] [ext: omni.isaac.ml_archive-3.3.0] startup
+[14.764s] [ext: omni.kit.asset_converter-6.0.1] startup
+[14.985s] [ext: omni.pip.cloud-1.5.4] startup
+[15.004s] [ext: omni.usd.schema.flow-110.0.0] startup
+[15.010s] [ext: omni.usd.schema.mujoco-1.1.1] startup
+[15.032s] [ext: omni.usd.schema.newton-1.2.1] startup
+[15.035s] [ext: omni.usd.schema.omni_lens_distortion-1.0.0] startup
+[15.054s] [ext: omni.usd.schema.omni_projectors-1.0.0] startup
+[15.070s] [ext: omni.usd.schema.omni_sensors-0.0.0] startup
+[15.130s] [ext: omni.usd.schema.omniscripting-1.0.1] startup
+[15.161s] [ext: omni.usd.schema.physical_lighting-0.1.0] startup
+[15.217s] [ext: omni.usd.schema.physx-110.1.13] startup
+[15.403s] [ext: omni.usd.schema.render_settings.rtx-1.0.2] startup
+[15.430s] [ext: omni.usd.schema.usd_particle_field-1.0.0] startup
+[15.438s] [ext: isaacsim.core.version-2.1.1] startup
+[15.456s] [ext: omni.kit.menu.core-1.2.0] startup
+[15.464s] [ext: omni.kit.menu.utils-2.2.4] startup
+[15.473s] [ext: isaacsim.app.about-2.3.1] startup
+[15.500s] [ext: isaacsim.asset.transformer-1.2.5] startup
+[15.503s] [ext: omni.scene.optimizer.core-110.1.0] startup
+[16.141s] [ext: isaacsim.asset.importer.utils-1.8.1] startup
+[16.150s] [ext: omni.convexdecomposition-110.1.13] startup
+[16.213s] [ext: omni.physics-110.1.13] startup
+[16.236s] [ext: omni.physx.gpu-110.1.13] startup
+[16.255s] [ext: omni.physx.foundation-110.1.13] startup
+[16.308s] [ext: omni.usdphysics-110.1.13] startup
+[16.327s] [ext: omni.physx.cooking-110.1.13] startup
+[16.355s] [ext: omni.physx-110.1.13] startup
+[16.447s] [ext: omni.physics.physx-110.1.13] startup
+[16.449s] [ext: isaacsim.asset.exporter.urdf-2.0.5] startup
+[16.458s] [ext: omni.kit.clipboard-1.1.1] startup
+[16.475s] [ext: omni.kit.usd.layers-2.6.1] startup
+[16.527s] [ext: omni.kit.widget.context_menu-1.4.0] startup
+[16.529s] [ext: omni.kit.context_menu-1.9.0] startup
+[16.530s] [ext: omni.kit.helper.file_utils-0.1.10] startup
+[16.532s] [ext: omni.kit.widget.nucleus_info-2.0.2] startup
+[16.533s] [ext: omni.kit.search_core-1.0.8] startup
+[16.534s] [ext: omni.kit.widget.path_field-2.0.13] startup
+[16.534s] [ext: omni.kit.widget.browser_bar-2.0.10] startup
+[16.535s] [ext: omni.kit.widget.filebrowser-2.13.4] startup
+[16.560s] [ext: omni.kit.widget.options_menu-1.1.6] startup
+[16.602s] [ext: omni.kit.widget.options_button-1.0.3] startup
+[16.603s] [ext: omni.kit.widget.search_delegate-1.0.9] startup
+[16.606s] [ext: omni.ui.scene-2.0.3] startup
+[16.642s] [ext: omni.kit.window.filepicker-2.15.5] startup
+[16.710s] [ext: omni.kit.window.file_importer-1.1.21] startup
+[16.754s] [ext: omni.kit.material.library-3.1.2] startup
+[16.775s] [ext: isaacsim.asset.transformer.rules-1.7.10] startup
+[16.820s] [ext: omni.usdex.libs-2.2.2] startup
+[16.927s] [ext: isaacsim.asset.importer.mjcf-3.10.1] startup
+[16.931s] [ext: isaacsim.asset.importer.urdf-3.11.2] startup
+[16.935s] [ext: omni.kit.primitive.mesh-1.1.0] startup
+[16.939s] [ext: omni.kit.stage_template.core-1.1.22] startup
+[16.940s] [ext: omni.kit.stage_templates-2.0.2] startup
+[16.942s] [ext: omni.usd.metrics.assembler-110.1.2] startup
+[16.967s] [ext: omni.warp.core-1.13.0] startup
+[17.229s] [ext: isaacsim.core.experimental.utils-0.17.2] startup
+[17.231s] [ext: omni.physics.stageupdate-110.1.13] startup
+[17.271s] [ext: omni.physics.tensors-110.1.13] startup
+[17.324s] [ext: omni.physx.tensors-110.1.13] startup
+[17.380s] [ext: isaacsim.core.simulation_manager-1.15.6] startup
+[17.447s] [ext: isaacsim.storage.native-1.9.3] startup
+[17.462s] [ext: omni.usd.metrics.assembler.physics-110.1.13] startup
+[17.476s] [ext: isaacsim.core.utils-4.1.7] startup
+[17.479s] [ext: isaacsim.core.prims-0.11.7] startup
+[24.580s] [ext: isaacsim.core.api-5.2.13] startup
+[24.605s] [ext: isaacsim.core.cloner-1.7.3] startup
+[24.638s] [ext: isaacsim.test.docstring-1.3.2] startup
+[24.651s] [ext: isaacsim.core.experimental.prims-1.8.9] startup
+[24.817s] [ext: isaacsim.core.experimental.primdata-0.3.2] startup
+[24.833s] [ext: omni.graph.tools-1.81.0] startup
+[24.907s] [ext: omni.graph-1.142.5] startup
+[25.002s] [ext: isaacsim.core.experimental.actuators-0.1.2] startup
+[25.084s] [ext: isaacsim.core.experimental.materials-0.7.1] startup
+[25.101s] [ext: isaacsim.core.experimental.objects-0.8.1] startup
+[25.299s] [ext: omni.hydra.engine.stats-1.0.5] startup
+[25.310s] [ext: omni.hydra.rtx.shadercache.vulkan-1.0.0] startup
+[25.311s] [ext: omni.index.libs-387500.4413.0] startup
+[25.311s] [ext: omni.index-1.0.1] startup
+[25.334s] [ext: omni.ujitso.client-0.0.0] startup
+[25.347s] [ext: omni.usd.schema.playback-1.0.0] startup
+[25.389s] [ext: omni.volume-0.5.2] startup
+[25.526s] [ext: omni.hydra.rtx-1.0.4] startup
+2026-09-29T10:54:35Z [25,653ms] [Warning] [omni.log] Source: omni.hydra was already registered.
+[26.824s] [ext: omni.kit.hydra_texture-1.6.0] startup
+[26.845s] [ext: omni.kit.raycast.query-1.2.0] startup
+[26.895s] [ext: omni.kit.viewport.legacy_gizmos-1.0.24] startup
+[26.908s] [ext: omni.kit.viewport.registry-104.0.6] startup
+[26.909s] [ext: omni.kit.viewport.scene_camera_model-1.0.7] startup
+[26.930s] [ext: omni.kit.widget.viewport-109.2.0] startup
+[26.959s] [ext: omni.kit.window.drop_support-1.0.8] startup
+[26.973s] [ext: omni.kit.viewport.window-109.0.2] startup
+[26.998s] [ext: omni.kit.viewport.utility-2.0.1] startup
+[26.999s] [ext: isaacsim.core.rendering_manager-0.4.3] startup
+[27.023s] [ext: omni.graph.action_core-1.1.9] startup
+[27.052s] [ext: omni.graph.action_nodes_core-2.11.0] startup
+[27.073s] [ext: omni.graph.action_nodes-2.11.0] startup
+[27.166s] [ext: omni.graph.action-2.10.2] startup
+[27.167s] [ext: omni.graph.image.core-0.6.1] startup
+[27.171s] [ext: omni.graph.image.nodes-1.3.1] startup
+[27.171s] [ext: omni.graph.nodes_core-2.11.0] startup
+[27.210s] [ext: omni.graph.nodes-2.12.0] startup
+[27.249s] [ext: omni.kit.hotkeys.core-1.3.12] startup
+[27.250s] [ext: omni.kit.property.adapter.core-1.1.1] startup
+[27.252s] [ext: omni.kit.property.adapter.usd-1.0.5] startup
+[27.257s] [ext: omni.kit.widget.filter-1.1.5] startup
+[27.279s] [ext: omni.kit.widget.highlight_label-1.0.3] startup
+[27.279s] [ext: omni.kit.widget.searchfield-1.1.8] startup
+[27.290s] [ext: omni.kit.window.file_exporter-1.0.36] startup
+[27.292s] [ext: omni.kit.widget.stage-4.4.0] startup
+[27.345s] [ext: omni.kit.window.content_browser_registry-0.0.6] startup
+[27.346s] [ext: omni.kit.window.file-2.0.10] startup
+[27.349s] [ext: omni.kit.window.content_browser-3.1.8] startup
+[27.359s] [ext: omni.kit.window.property-1.15.1] startup
+[27.429s] [ext: omni.kit.property.usd-4.9.4] startup
+[27.462s] [ext: omni.graph.scriptnode-2.10.2] startup
+[27.503s] [ext: omni.kit.widget.searchable_combobox-1.0.7] startup
+[27.519s] [ext: omni.kit.widget.settings-2.0.0] startup
+[27.523s] [ext: omni.kit.window.preferences-1.8.3] startup
+[27.530s] [ext: omni.kit.viewport.menubar.core-107.2.2] startup
+[27.551s] [ext: omni.syntheticdata-0.6.15] startup
+[27.738s] [ext: omni.replicator.nv-1.1.1] startup
+[28.308s] [ext: omni.videoencoding-0.2.1] startup
+[28.429s] [ext: omni.replicator.core-1.13.27] startup
+2026-09-29T10:54:38Z [28,394ms] [Warning] [pxr.Semantics] pxr.Semantics is deprecated - please use Semantics instead
+2026-09-29T10:54:38Z [28,756ms] [Warning] [omni.replicator.core.scripts.extension] No material configuration file, adding configuration to material settings directly.
+[29.132s] [ext: isaacsim.core.nodes-5.10.5] startup
+[29.233s] [ext: isaacsim.core.throttling-2.3.5] startup
+[29.234s] [ext: omni.kit.manipulator.viewport-107.0.1] startup
+[29.235s] [ext: omni.graph.visualization.nodes-2.1.4] startup
+[29.269s] [ext: omni.kit.window.extensions-1.5.10] startup
+[29.296s] [ext: isaacsim.gui.components-1.8.5] startup
+[29.301s] [ext: isaacsim.robot.surface_gripper-3.6.2] startup
+[29.322s] [ext: isaacsim.robot.manipulators-3.4.4] startup
+[29.366s] [ext: isaacsim.robot_motion.lula-4.1.3] startup
+[29.372s] [ext: isaacsim.robot_motion.motion_generation-8.2.9] startup
+[29.380s] [ext: isaacsim.cortex.framework-1.0.18] startup
+[29.382s] [ext: isaacsim.cortex.behaviors-2.0.17] startup
+[29.383s] [ext: isaacsim.examples.base-1.3.2] startup
+[29.412s] [ext: omni.kit.widget.zoombar-1.0.7] startup
+[29.413s] [ext: omni.kit.browser.core-2.3.18] startup
+[29.420s] [ext: omni.kit.browser.folder.core-2.0.2] startup
+[29.425s] [ext: omni.kit.widget.stage_icons-1.0.8] startup
+[29.426s] [ext: omni.kit.window.stage-2.6.1] startup
+[29.430s] [ext: omni.kit.menu.stage-1.2.7] startup
+[29.432s] [ext: omni.kit.usd.collect-3.0.6] startup
+[29.439s] [ext: omni.kit.widget.prompt-1.0.7] startup
+[29.440s] [ext: omni.kit.tool.collect-2.2.19] startup
+[29.442s] [ext: isaacsim.examples.browser-0.3.2] startup
+[29.445s] [ext: omni.kit.search.files-1.0.4] startup
+[29.460s] [ext: omni.kit.widget.calendar-1.0.9] startup
+[29.461s] [ext: omni.kit.widget.extended_searchfield-1.0.31] startup
+[29.493s] [ext: omni.simready.content.browser-0.3.7] startup
+[29.696s] [ext: isaacsim.gui.content_browser-0.4.3] startup
+[29.699s] [ext: omni.kit.selection-0.1.6] startup
+[29.700s] [ext: isaacsim.gui.menu-2.10.5] startup
+[29.734s] [ext: isaacsim.gui.property-1.6.4] startup
+[29.741s] [ext: omni.kit.viewport.actions-110.0.0] startup
+[29.766s] [ext: omni.kit.viewport.menubar.display-107.1.3] startup
+[29.768s] [ext: isaacsim.gui.sensors.icon-2.2.1] startup
+[29.771s] [ext: omni.behavior.scripting.core-110.1.0] startup
+[29.774s] [ext: isaacsim.replicator.behavior-1.5.4] startup
+[29.775s] [ext: isaacsim.replicator.experimental.domain_randomization-1.2.5] startup
+[29.803s] [ext: isaacsim.replicator.domain_randomization-1.2.2] startup
+[29.894s] [ext: isaacsim.replicator.writers-1.5.4] startup
+[30.054s] [ext: isaacsim.robot.experimental.wheeled_robots-0.2.11] startup
+[30.097s] [ext: isaacsim.robot.policy.examples-5.2.12] startup
+[30.118s] [ext: isaacsim.robot.wheeled_robots-5.2.4] startup
+[30.123s] [ext: isaacsim.robot.wheeled_robots.nodes-0.1.5] startup
+[30.224s] [ext: isaacsim.robot_motion.experimental.motion_generation-6.1.3] startup
+[30.249s] [ext: isaacsim.robot_motion.cumotion-1.3.1] startup
+[30.262s] [ext: omni.kit.numpy.common-0.1.3] startup
+[30.263s] [ext: isaacsim.sensors.camera-1.7.9] startup
+[30.310s] [ext: isaacsim.sensors.experimental.physics-3.0.2] startup
+[30.319s] [ext: omni.sensors.net-1.0.1] startup
+[30.321s] [ext: omni.sensors.nv.common-3.0.0] startup
+[30.347s] [ext: omni.sensors.nv.materials-2.0.0] startup
+[30.349s] [ext: omni.sensors.nv.acoustic-3.0.0] startup
+[30.352s] [ext: omni.sensors.nv.ids-2.0.1] startup
+[30.353s] [ext: omni.sensors.nv.lidar-3.0.0] startup
+[30.356s] [ext: omni.sensors.nv.radar-3.0.0] startup
+[30.358s] [ext: isaacsim.sensors.experimental.rtx-1.4.6] startup
+[30.717s] [ext: isaacsim.sensors.physics.nodes-1.5.3] startup
+[30.724s] [ext: isaacsim.util.debug_draw-3.2.3] startup
+[30.766s] [ext: isaacsim.sensors.physx-2.5.5] startup
+[30.774s] [ext: isaacsim.sensors.rtx-15.17.1] startup
+[30.784s] [ext: isaacsim.simulation_app-2.18.4] startup
+[30.784s] [ext: omni.anim.curve.core-1.6.0] startup
+[30.820s] [ext: omni.graph.ui_nodes-2.11.1] startup
+[30.911s] [ext: omni.hydra.scene_api-0.1.3] startup
+[30.914s] [ext: omni.kit.manipulator.camera-110.0.0] startup
+[30.918s] [ext: omni.kit.manipulator.selector-1.1.4] startup
+[30.929s] [ext: omni.kit.manipulator.transform-107.0.0] startup
+[30.934s] [ext: omni.kit.widget.toolbar-2.1.0] startup
+[30.943s] [ext: omni.kit.manipulator.tool.snap-1.5.14] startup
+[30.947s] [ext: omni.kit.viewport.manipulator.transform-107.0.4] startup
+[30.949s] [ext: omni.kit.manipulator.prim.core-108.0.2] startup
+[30.955s] [ext: omni.kit.manipulator.prim.usd-107.0.3] startup
+[30.957s] [ext: omni.kit.manipulator.prim-108.0.0] startup
+[30.957s] [ext: omni.kit.manipulator.selection-109.0.1] startup
+[30.958s] [ext: omni.kit.menu.create-2.0.2] startup
+[30.959s] [ext: omni.kit.property.audio-1.0.16] startup
+[30.979s] [ext: omni.kit.property.camera-1.0.14] startup
+[30.980s] [ext: omni.kit.property.geometry-2.1.2] startup
+[30.983s] [ext: omni.kit.property.light-1.0.14] startup
+2026-09-29T10:54:41Z [31,139ms] [Warning] [omni.usd] Encountered USD Warnings but USD Diagnostics are currently muted. To view USD Warnings, please set the '/persistent/app/usd/muteUsdDiagnostics' setting to false in Preferences page.
+[31.421s] [ext: omni.kit.property.material-1.14.6] startup
+[31.430s] [ext: omni.kit.property.render-1.2.2] startup
+[31.431s] [ext: omni.kit.property.transform-1.6.9] startup
+[31.435s] [ext: omni.kit.property.bundle-1.5.1] startup
+[31.437s] [ext: omni.kit.usdz_export-1.1.0] startup
+[31.439s] [ext: omni.kit.tool.asset_importer-6.0.1] startup
+[31.445s] [ext: omni.kit.ui.actions-1.0.5] startup
+[31.447s] [ext: omni.kit.viewport.menubar.camera-107.0.10] startup
+[31.452s] [ext: omni.kit.viewport.menubar.lighting-107.3.2] startup
+[31.455s] [ext: omni.kit.viewport.menubar.render-110.0.0] startup
+[31.458s] [ext: omni.kit.viewport.menubar.settings-110.0.1] startup
+[31.462s] [ext: omni.kit.window.console-1.1.9] startup
+[31.465s] [ext: omni.kit.window.status_bar-0.1.11] startup
+[31.468s] [ext: omni.kit.window.toolbar-3.0.3] startup
+[31.470s] [ext: omni.ocio-0.1.1] startup
+[31.471s] [ext: omni.physx.commands-110.1.13] startup
+[31.474s] [ext: omni.replicator.replicator_yaml-2.0.12] startup
+[31.499s] [ext: omni.rtx.window.settings-0.8.0] startup
+[31.504s] [ext: omni.rtx.settings.core-0.7.1] startup
+[31.508s] [ext: omni.usd.metrics.assembler.ui-110.1.1] startup
+[31.514s] [ext: semantics.schema.editor-2.0.2] startup
+[31.536s] [ext: semantics.schema.property-2.0.2] startup
+[31.538s] [ext: omni.kit.menu.common-2.0.2] startup
+[31.540s] [ext: isaacsim.exp.base-6.0.1] startup
+[31.540s] [ext: isaacsim.exp.base.python-6.0.1] startup
+[31.560s] Simulation App Starting
+[37.952s] Simulation App Startup Complete
+[37.959s] app ready
+[38.332s] [ext: isaacsim.sensors.rtx.nodes-0.1.2] startup
+[38.353s] [ext: isaacsim.ros2.core-1.9.4] startup
+[38.584s] Attempting to load system rclpy
+[38.614s] rclpy loaded
+[38.617s] [ext: isaacsim.ros2.nodes-1.18.13] startup
+[38.661s] [ext: isaacsim.ros2.examples-1.2.4] startup
+[38.665s] [ext: isaacsim.ros2.ui-1.6.5] startup
+[38.875s] [ext: isaacsim.ros2.bridge-5.1.2] startup
+2026-09-29T10:54:49Z [39,541ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/obstacles/obs_3
+2026-09-29T10:54:49Z [39,541ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/obstacles/obs_7
+2026-09-29T10:54:49Z [39,541ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/obstacles/obs_11
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_0
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_1
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_2
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_3
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_4
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_5
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_6
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_7
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_8
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_9
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_10
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_11
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_12
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_13
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_14
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_15
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_16
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_17
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_18
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_19
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_20
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_21
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_22
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_23
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_24
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_25
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_26
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_27
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_28
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_29
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_30
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_31
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_32
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_33
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_34
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_35
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_36
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_37
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_38
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_39
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_40
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_41
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_42
+Starting kit application with the following args:  ['/isaacsim/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py', '/isaacsim/apps/isaacsim.exp.base.python.kit', '--/app/tokens/exe-path=/isaacsim/kit', '--/persistent/app/viewport/displayOptions=3094', '--/rtx/materialDb/syncLoads=True', '--/rtx/hydra/materialSyncLoads=True', '--/omni/kit/plugin/syncUsdLoads=True', '--/app/renderer/resolution/width=1280', '--/app/renderer/resolution/height=720', '--/app/window/width=1440', '--/app/window/height=900', '--/renderer/multiGpu/enabled=True', '--/app/fastShutdown=True', '--/app/installSignalHandlers=0', '--ext-folder', '/isaacsim/exts', '--ext-folder', '/isaacsim/apps', '--/physics/cudaDevice=0', '--/plugins/carb.tasking.plugin/threadCount=32', '--/plugins/omni.tbb.globalcontrol/maxThreadCount=32', '--portable', '--no-window', '--/app/window/hideUi=1']
+Passing the following args to the base kit application:  ['--headless', '--record', '/home/qbotix-rover/sih_ws/mission_recordings/report_1624', '--ffmpeg', '/home/qbotix-rover/sih_ws/.demoenv/lib/python3.12/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2', '--rec-size', '1920x1080']
+Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.2
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 4090" (22 GiB, sm_89, mempool enabled)
+   Kernel cache:
+     /home/qbotix-rover/.cache/warp/1.13.0
+Opening usd file at  /home/qbotix-rover/sih_ws/src/sih_isaac/usd/sih26126_world.usd  ...Done.
+[sim] base=/World/sih_rover/Geometry/base_link
+[sim] cam=/World/sih_rover/Geometry/base_link/camera_link/zed_camera
+[sim] articulation root=/World/sih_rover/Geometry/base_link
+[sim] lidar=/World/sih_rover/Geometry/base_link/rtx_lidar
+[sim] dofs: ['wheel_fl_joint', 'wheel_fr_joint', 'wheel_rl_joint', 'wheel_rr_joint']
+[sim] recording behind/side/top/onboard views at 1920x1080 @15fps -> /home/qbotix-rover/sih_ws/mission_recordings/report_1624
+[sim] running -- waiting for /cmd_vel
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_43
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_44
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_45
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_46
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_47
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_48
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_49
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_50
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_51
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_52
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_53
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_54
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_55
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_56
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_57
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_58
+2026-09-29T10:54:49Z [39,542ms] [Warning] [omni.physicsschema.plugin] Non-uniform scale may result in a non matching collision representation on prim: /World/rocks/rock_59
+2026-09-29T10:54:49Z [39,878ms] [Warning] [carb] Client omni.hydratexture.plugin has acquired [carb::settings::ISettings v1.1] 100 times. Consider accessing this interface with carb::getCachedInterface() (Performance warning)
+2026-09-29T10:54:50Z [40,244ms] [Warning] [isaacsim.ros2.nodes.ogn.python.nodes.OgnROS2RtxLidarHelper] fullScan is deprecated. RTX Lidar now always produces full scans via accumulateOutputs. This setting is ignored.
+2026-09-29T10:54:50Z [40,244ms] [Warning] [isaacsim.ros2.core.impl.camera_info_utils] Forcing fy to fx (259.1152515719963 != 259.1152541925489) when computing CameraInfo, as renderer assumes square pixels.
+2026-09-29T10:54:50Z [40,245ms] [Warning] [isaacsim.ros2.nodes] [ROS2 Publish Joint State] Reading from targetPrim is deprecated. Connect an Isaac Read Joint State node and use its outputs instead.
+2026-09-29T10:54:50Z [40,375ms] [Warning] [rtx.rtxsensor.plugin] Multi-tick is enabled but motion BVH is not active. This is not supported.
+2026-09-29T10:54:50Z [40,375ms] [Warning] [rtx.sensors.lidar.core.plugin] MotionBVH for lidar model not enabled. This will result in an incorrect point cloud without motion effects!
+2026-09-29T10:54:50Z [40,381ms] [Warning] [omni.rtx] DLSS increasing input dimensions: Render resolution of (320, 180) is below minimal input resolution of 300.
+[sim] t=    0.1s cmd=(+0.00,+0.00) gt=( -62.00, +16.00) odom=( -62.00, +16.00)
+2026-09-29T10:54:50Z [40,929ms] [Warning] [omni.syntheticdata.plugin] OgnSdPostRenderVarToHost : rendervar copy from texture directly to host buffer is counter-performant. Please use copy from texture to device buffer first.
+2026-09-29T10:54:50Z [40,941ms] [Warning] [omni.syntheticdata.plugin] SdRenderVarPtr missing valid input renderVar LdrColorSDhost
+2026-09-29T10:54:50Z [40,941ms] [Warning] [omni.timeline.plugin] Deprecated: direct use of ITimeline callbacks is deprecated. Use ITimeline::getTimeline (Python: omni.timeline.get_timeline_interface) instead.
+[sim] t=    5.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.99, +16.00)
+[sim] t=   10.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.98, +16.00)
+[sim] t=   15.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.98, +16.00)
+[sim] t=   20.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.98, +16.00)
+[sim] t=   25.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.98, +16.00)
+[sim] t=   30.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.97, +16.00)
+[sim] t=   35.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.97, +16.00)
+[sim] t=   40.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.97, +16.00)
+[sim] t=   45.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.97, +16.00)
+[sim] t=   50.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.96, +16.00)
+[sim] t=   55.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.96, +16.01)
+[sim] t=   60.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.96, +16.01)
+[sim] t=   65.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.96, +16.01)
+[sim] t=   70.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.95, +16.01)
+[sim] t=   75.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.95, +16.01)
+[sim] t=   80.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.95, +16.01)
+[sim] t=   85.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.95, +16.01)
+[sim] t=   90.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.94, +16.01)
+[sim] t=   95.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.94, +16.01)
+[sim] t=  100.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.94, +16.01)
+[sim] t=  105.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.94, +16.01)
+[sim] t=  110.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.93, +16.01)
+[sim] t=  115.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.93, +16.01)
+[sim] t=  120.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.93, +16.01)
+[sim] t=  125.1s cmd=(+0.00,+0.00) gt=( -61.99, +16.00) odom=( -61.93, +16.01)

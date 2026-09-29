@@ -1,0 +1,79 @@
+[finish] ============================================================
+[finish] mission over. Closing recorders and building the videos and
+[finish] report: this takes about 3-5 minutes. Do NOT press Ctrl-C or
+[finish] close the terminals -- everything shuts down by itself.
+[finish] ============================================================
+[finish] run: /home/qbotix-rover/sih_ws/mission_recordings/report_1401
+[finish] sim already stopped
+[finish] building mission videos
+[videos] geo_pipeline: /home/qbotix-rover/sih_ws/src/sih_isaac/scripts/make_geo_video.py /home/qbotix-rover/sih_ws/mission_recordings/report_1401 ...
+[videos] captions: /home/qbotix-rover/sih_ws/src/sih_isaac/scripts/annotate_videos.py /home/qbotix-rover/sih_ws/mission_recordings/report_1401 ...
+[caption] isaac_behind.mp4: 6 caption windows
+[caption] isaac_side.mp4: 6 caption windows
+[caption] isaac_top.mp4: 6 caption windows
+[geo] writing /home/qbotix-rover/sih_ws/mission_recordings/report_1401/geo_pipeline.mp4
+[caption] isaac_onboard.mp4: 6 caption windows
+[caption] rviz.mp4: 6 caption windows
+/home/qbotix-rover/sih_ws/.demoenv/lib/python3.12/site-packages/matplotlib/projections/__init__.py:63: UserWarning: Unable to import Axes3D. This may be due to multiple versions of Matplotlib being installed (e.g. as a system package and as a pip package). As a result, the 3D projection is not available.
+  warnings.warn("Unable to import Axes3D. This may be due to multiple versions of "
+[geo] Georeferencing the mission: 4 s
+[geo] Step 1 - the prior terrain GeoTIFF: 13 s
+[geo] Step 2 - the DEM: 12 s
+[caption] isaac_behind.mp4: done
+[caption] isaac_side.mp4: done
+[caption] isaac_top.mp4: done
+[caption] isaac_onboard.mp4: done
+[caption] rviz.mp4: done
+[geo] Step 3 - slope and traversability: 12 s
+[geo] Step 4 - the occupancy grid: 11 s
+[geo] Step 5 - UTM 44N and the map frame: 14 s
+[geo] Step 6 - the commanded goal: 15 s
+[geo] The chain, end to end: 6 s
+[geo] wrote /home/qbotix-rover/sih_ws/mission_recordings/report_1401/geo_pipeline.mp4 (2610 frames, 87 s) and geo_chapters.json
+[reel] sources: behind 890s, side 890s, top 897s, onboard 895s, rviz 1559s, costmap 857s, ekf 857s, slam_graph 857s, geo_pipeline 87s
+[reel] move 49s  tunnel 527-554s  end 884s
+[reel] 20 segments, 247.4s planned (limit 300s)
+[reel] wrote /home/qbotix-rover/sih_ws/mission_recordings/report_1401/QSLAM_highlight.mp4  (247.3s, limit 300s)
+[videos] index -> /home/qbotix-rover/sih_ws/mission_recordings/report_1401/VIDEOS.md
+[videos] all mission videos built
+[finish] building mission report
+/home/qbotix-rover/sih_ws/.demoenv/lib/python3.12/site-packages/matplotlib/projections/__init__.py:63: UserWarning: Unable to import Axes3D. This may be due to multiple versions of Matplotlib being installed (e.g. as a system package and as a pip package). As a result, the 3D projection is not available.
+  warnings.warn("Unable to import Axes3D. This may be due to multiple versions of "
+wrote /home/qbotix-rover/sih_ws/mission_recordings/report_1401/SIH26126_Mission_Report.pdf (+ copy at /home/qbotix-rover/sih_ws/SIH26126_Mission_Report.pdf)
+[finish] done: /home/qbotix-rover/sih_ws/mission_recordings/report_1401
+total 1.1G
+drwxrwxr-x 2 qbotix-rover qbotix-rover 4.0K Sep 29 14:41 broken
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  65M Sep 29 14:28 costmap.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  62M Sep 29 14:28 ekf.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 128K Sep 29 14:48 fig_telemetry.png
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  62K Sep 29 14:48 fig_trajectory.png
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 3.2K Sep 29 14:48 finish.log
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 1.4K Sep 29 14:48 geo_chapters.json
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 5.1M Sep 29 14:48 geo_pipeline.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  14M Sep 29 14:28 goal.log
+-rw-rw-r-- 1 qbotix-rover qbotix-rover   14 Sep 29 14:03 goal_seen.txt
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 205M Sep 29 14:47 isaac_behind.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 172M Sep 29 14:47 isaac_onboard.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 204M Sep 29 14:47 isaac_side.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 147M Sep 29 14:47 isaac_top.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover    6 Sep 29 14:02 logger.pid
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 236K Sep 29 14:28 mission_log.csv
+-rw-rw-r-- 1 qbotix-rover qbotix-rover    6 Sep 29 14:02 nav.pid
+drwxrwxr-x 2 qbotix-rover qbotix-rover 4.0K Sep 29 14:45 nav_ros_log
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  57M Sep 29 14:48 QSLAM_highlight.mp4
+drwxrwxr-x 2 qbotix-rover qbotix-rover 4.0K Sep 29 14:46 raw
+-rw-rw-r-- 1 qbotix-rover qbotix-rover    6 Sep 29 14:02 rviz_ffmpeg.pid
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  50M Sep 29 14:47 rviz.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover   15 Sep 29 14:02 rviz_start.txt
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 1.2M Sep 29 14:48 SIH26126_Mission_Report.pdf
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  49K Sep 29 14:28 sim.log
+-rw-rw-r-- 1 qbotix-rover qbotix-rover    6 Sep 29 14:01 sim.pid
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  62M Sep 29 14:28 slam_graph.mp4
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 172K Sep 29 14:48 still_isaac_behind.jpg
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 181K Sep 29 14:48 still_isaac_side.jpg
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 155K Sep 29 14:48 still_isaac_top.jpg
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 265K Sep 29 14:48 still_rviz.jpg
+-rw-rw-r-- 1 qbotix-rover qbotix-rover  19K Sep 29 14:28 timebase.csv
+-rw-rw-r-- 1 qbotix-rover qbotix-rover 2.2K Sep 29 14:48 VIDEOS.md
+-rw-rw-r-- 1 qbotix-rover qbotix-rover    6 Sep 29 14:02 viz.pid
+-rw-rw-r-- 1 qbotix-rover qbotix-rover    7 Sep 29 14:02 viz_start.txt
