@@ -23,3 +23,6 @@ Thumbs.db
 
 # Generated simulation/build artifacts
 *.pyc
+.~lock.*
+mission_recordings/**/*.log
+mission_recordings/**/*.pid
